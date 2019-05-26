@@ -13,7 +13,7 @@ async function main() {
 
 	await wait(0);
 
-	await server.openMainDoor({});
+	await server.openWgDoor({});
 
 	stream.close();
 }

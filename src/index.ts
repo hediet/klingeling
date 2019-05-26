@@ -7,6 +7,12 @@ class Main {
 	private readonly clients = new Set<typeof KlingelApi.TClientInterface>();
 
 	constructor() {
+		process.on("SIGTERM", async () => {
+			console.log("tuiarem");
+			await this.service.dispose();
+			process.exit();
+		});
+
 		startWebSocketServer({ port }, async stream => {
 			const { client } = KlingelApi.registerServerToStream(
 				stream,

@@ -31,6 +31,10 @@ export class Service {
 		const s = await this.initializedBarrier.onUnlocked;
 		await s.openWgDoor();
 	}
+
+	public async dispose(): Promise<void> {
+		const s = await this.initializedBarrier.onUnlocked;
+	}
 }
 
 class InitializedService {
@@ -61,18 +65,20 @@ class InitializedService {
 	}
 
 	private readonly wgDoorMotorCloseOutput = new DigitalOutput({
-		pullResistor: PULL_DOWN,
+		pullResistor: PULL_UP,
 		pin: "GPIO20",
 	});
 
 	private readonly wgDoorMotorOpenOutput = new DigitalOutput({
-		pullResistor: PULL_DOWN,
+		pullResistor: PULL_UP,
 		pin: "GPIO21",
 	});
 
 	private isOpening = false;
 
 	public async openWgDoor(): Promise<void> {
+		console.log("open");
+
 		if (this.isOpening) {
 			return;
 		}
