@@ -1,23 +1,26 @@
 {
-    "name": "klingeling",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
-    "dependencies": {
-        "@hediet/std": "^0.4.0",
-        "@hediet/typed-json-rpc": "^0.7.3",
-        "@hediet/typed-json-rpc-websocket": "^0.6.0",
-        "@hediet/typed-json-rpc-websocket-server": "^0.6.0",
-        "@types/raspi-gpio": "^6.0.0",
-        "raspi": "^6.0.1",
-        "ws": "^7.0.0"
-    },
-    "scripts": {
-        "dev": "tsc --watch",
-        "build": "tsc",
-        "start": "node dist/index"
-    },
-    "devDependencies": {
-        "typescript": "^3.4.5"
-    }
+	"name": "klingeling",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"dependencies": {
+		"@hediet/std": "^0.4.0",
+		"@hediet/typed-json-rpc": "^0.7.3",
+		"@hediet/typed-json-rpc-websocket": "^0.6.0",
+		"@hediet/typed-json-rpc-websocket-server": "^0.6.0",
+		"@types/raspi-gpio": "^6.0.0",
+		"raspi": "^6.0.1",
+		"ws": "^7.0.0"
+	},
+	"peerDependencies": {
+		"raspi-gpio": "^6.2.1"
+	},
+	"scripts": {
+		"dev": "tsc --watch",
+		"build": "tsc",
+		"start": "node dist/index"
+	},
+	"devDependencies": {
+		"typescript": "^3.4.5"
+	}
 }
