@@ -4,8 +4,8 @@ import { wait } from "@hediet/std/timer";
 
 main();
 
-const openTime = parseInt(process.argv[2], 10);
-const closeTime = parseInt(process.argv[3], 10);
+/*const openTime = parseInt(process.argv[2], 10);
+const closeTime = parseInt(process.argv[3], 10);*/
 
 async function main() {
 	const stream = await WebSocketStream.connectTo({
@@ -13,13 +13,7 @@ async function main() {
 		port: 42319,
 	});
 	const { server } = KlingelApi.getServerFromStream(stream, undefined, {});
-
-	await wait(0);
-
-	await server.openWgDoorConfig({
-		openTime,
-		closeTime,
-	});
+	await server.openWgDoor({});
 
 	stream.close();
 }

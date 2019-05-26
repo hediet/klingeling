@@ -89,8 +89,8 @@ class InitializedService {
 		closeTime: number;
 	}): Promise<void> {
 		console.log("open");
-		const openTime = args ? args.openTime : 10 * 1000;
-		const closeTime = args ? args.closeTime : 10 * 1000;
+		const openTime = args ? args.openTime : 17600;
+		const closeTime = args ? args.closeTime : 15500;
 
 		if (this.isOpening) {
 			return;
