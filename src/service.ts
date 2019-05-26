@@ -65,14 +65,19 @@ class InitializedService {
 	}
 
 	private readonly wgDoorMotorCloseOutput = new DigitalOutput({
-		pullResistor: PULL_UP,
+		pullResistor: PULL_DOWN,
 		pin: "GPIO20",
 	});
 
 	private readonly wgDoorMotorOpenOutput = new DigitalOutput({
-		pullResistor: PULL_UP,
+		pullResistor: PULL_DOWN,
 		pin: "GPIO21",
 	});
+
+    constructor() {
+        this.wgDoorMotorCloseOutput.write(0);
+        this.wgDoorMotorOpenOutput.write(0);
+    }
 
 	private isOpening = false;
 
