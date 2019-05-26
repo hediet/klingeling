@@ -8,8 +8,13 @@
 		"@hediet/typed-json-rpc": "^0.7.3",
 		"@hediet/typed-json-rpc-websocket": "^0.6.0",
 		"@hediet/typed-json-rpc-websocket-server": "^0.6.0",
+		"@nestjs/common": "^6.2.4",
+		"@nestjs/core": "^6.2.4",
+		"@nestjs/platform-express": "^6.2.4",
 		"@types/raspi-gpio": "^6.0.0",
 		"raspi": "^6.0.1",
+		"reflect-metadata": "^0.1.13",
+		"rxjs": "^6.5.2",
 		"ws": "^7.0.0"
 	},
 	"optionalDependencies": {
@@ -18,7 +23,7 @@
 	"scripts": {
 		"dev": "tsc --watch",
 		"build": "tsc",
-		"start": "node dist/index"
+		"start-service": "node dist/service/index"
 	},
 	"devDependencies": {
 		"typescript": "^3.4.5"

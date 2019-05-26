@@ -1,6 +1,5 @@
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
-import { KlingelApi } from "./api";
-import { wait } from "@hediet/std/timer";
+import { KlingelApi } from "./service/api";
 
 main();
 
