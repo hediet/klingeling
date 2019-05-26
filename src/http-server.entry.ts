@@ -21,6 +21,13 @@ export class MainController {
 		return { server, dispose: () => stream.dispose() };
 	}
 
+	@Get("status")
+	async getStatus() {
+		return {
+			status: "ok",
+		};
+	}
+
 	@Post("openWgDoor")
 	async openWgDoor() {
 		const { server, dispose } = await this.connect();
