@@ -134,6 +134,13 @@ async-limiter@^1.0.0, async-limiter@~1.0.0:
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
   integrity sha512-jp/uFnooOiO+L211eZOoSyzpOITMXx1rBITauYykG3BRYPu8h0UcxsPNB04RR5vo4Tyz3+ay17tR6JVf9qzYWg==
 
+bindings@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
+  integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
+  dependencies:
+    file-uri-to-path "1.0.0"
+
 chai@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.2.0.tgz#760aa72cf20e3795e84b12877ce0e83737aa29e5"
@@ -162,6 +169,11 @@ diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+
+file-uri-to-path@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
+  integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
 fp-ts@^1.0.0:
   version "1.18.2"
@@ -220,6 +232,11 @@ lolex@^4.0.1:
   resolved "https://registry.yarnpkg.com/lolex/-/lolex-4.0.1.tgz#4a99c2251579d693c6a083446dae0e5c3844d3fa"
   integrity sha512-UHuOBZ5jjsKuzbB/gRNNW8Vg8f00Emgskdq2kvZxgBJCS0aqquAuXai/SkWORlKeZEiNQWZjFZOqIUcH9LqKCw==
 
+nan@^2.13.1:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
+  integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
+
 nise@^1.4.10:
   version "1.4.10"
   resolved "https://registry.yarnpkg.com/nise/-/nise-1.4.10.tgz#ae46a09a26436fae91a38a60919356ae6db143b6"
@@ -243,12 +260,39 @@ pathval@^1.1.0:
   resolved "https://registry.yarnpkg.com/pathval/-/pathval-1.1.0.tgz#b942e6d4bde653005ef6b71361def8727d0645e0"
   integrity sha1-uULm1L3mUwBe9rcTYd74cn0GReA=
 
-raspi-board@^7.0.0:
+pigpio@^1.2.1:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/pigpio/-/pigpio-1.2.2.tgz#c40da5c24b0d1d5f853a3e642e969e1ff292d6c0"
+  integrity sha512-ykeI8p7FU8BtwNlFHQf1sg024y89IMdYypvMux+lfCDzNL1PPGkL2xXqxFBHDN0EOP8fcGd4Pri1FFKSlxKNxQ==
+  dependencies:
+    bindings "^1.5.0"
+    nan "^2.13.1"
+
+raspi-board@^7.0.0, raspi-board@^7.1.2:
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/raspi-board/-/raspi-board-7.1.2.tgz#3964a93b4d9b7321ed8541c5f341c0fcf9c71ec5"
   integrity sha512-IKW1jFeaitx0+dyNOgtNa7Q7/AWzYEcn+ErlnOx1rDWElQBXse6h/3L2puF5isbfO8D1m4gXtsx0xLolRGXvZw==
   dependencies:
     j5-io-types "^2.4.0"
+
+raspi-gpio@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/raspi-gpio/-/raspi-gpio-6.2.1.tgz#87cccd953f35fd3778cf6def251fd466acf7a8eb"
+  integrity sha512-MpMZI6Dbksvv7A6hYm74mkv6asualaumrHyXwDMXz4S/5+3Eka7lWcbZ/UlJ5Vj7FPqv5LEgJpfAnZC3OPOQ9Q==
+  dependencies:
+    j5-io-types "^2.4.0"
+    pigpio "^1.2.1"
+    raspi-board "^7.1.2"
+    raspi-peripheral "^3.0.3"
+
+raspi-peripheral@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/raspi-peripheral/-/raspi-peripheral-3.0.3.tgz#1c0314c8066133dc534574d1c26a8c5fa9dbc456"
+  integrity sha512-MHQiIH9RelUFMLorLg6RCdUIBOg849iuNNySHYgTi8xedq7+qx/ynwdApSONXRKrrPzx/DLIWzSqgBRkybfC+A==
+  dependencies:
+    j5-io-types "^2.4.0"
+    raspi "^6.0.1"
+    raspi-board "^7.1.2"
 
 raspi@^6.0.1:
   version "6.0.1"
