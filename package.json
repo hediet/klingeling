@@ -16,5 +16,8 @@
         "dev": "tsc --watch",
         "build": "tsc",
         "start": "node dist/index"
+    },
+    "devDependencies": {
+        "typescript": "^3.4.5"
     }
 }
