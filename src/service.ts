@@ -27,9 +27,12 @@ export class Service {
 		await s.openMainDoor(openedDurationInMs);
 	}
 
-	public async openWgDoor(): Promise<void> {
+	public async openWgDoor(args?: {
+		openTime: number;
+		closeTime: number;
+	}): Promise<void> {
 		const s = await this.initializedBarrier.onUnlocked;
-		await s.openWgDoor();
+		await s.openWgDoor(args);
 	}
 
 	public async dispose(): Promise<void> {
@@ -74,15 +77,20 @@ class InitializedService {
 		pin: "GPIO21",
 	});
 
-    constructor() {
-        this.wgDoorMotorCloseOutput.write(0);
-        this.wgDoorMotorOpenOutput.write(0);
-    }
+	constructor() {
+		this.wgDoorMotorCloseOutput.write(0);
+		this.wgDoorMotorOpenOutput.write(0);
+	}
 
 	private isOpening = false;
 
-	public async openWgDoor(): Promise<void> {
+	public async openWgDoor(args?: {
+		openTime: number;
+		closeTime: number;
+	}): Promise<void> {
 		console.log("open");
+		const openTime = args ? args.openTime : 10 * 1000;
+		const closeTime = args ? args.closeTime : 10 * 1000;
 
 		if (this.isOpening) {
 			return;
@@ -93,13 +101,13 @@ class InitializedService {
 		try {
 			this.wgDoorMotorOpenOutput.write(1);
 		} finally {
-			await wait(5000);
+			await wait(openTime);
 			this.wgDoorMotorOpenOutput.write(0);
 		}
 
 		try {
 			this.wgDoorMotorCloseOutput.write(1);
-			await wait(5000);
+			await wait(closeTime);
 		} finally {
 			this.wgDoorMotorCloseOutput.write(0);
 		}

@@ -23,6 +23,12 @@ export const KlingelApi = contract({
 			]),
 		}),
 		openWgDoor: requestContract({}),
+		openWgDoorConfig: requestContract({
+			params: type({
+				openTime: number,
+				closeTime: number,
+			}),
+		}),
 		notifyBellHasRung: requestContract({}),
 	},
 	client: {

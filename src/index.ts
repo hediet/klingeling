@@ -35,6 +35,9 @@ class Main {
 						}
 						await this.service.openWgDoor();
 					},
+					openWgDoorConfig: async ({ closeTime, openTime }) => {
+						await this.service.openWgDoor({ closeTime, openTime });
+					},
 					notifyBellHasRung: async () => {
 						for (const c of this.clients) {
 							c.bellRinged({});
