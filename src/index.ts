@@ -1,5 +1,5 @@
 import { startWebSocketServer } from "@hediet/typed-json-rpc-websocket-server";
-import { KlingelApi } from "./api";
+import { KlingelApi, port } from "./api";
 import { Service } from "./service";
 
 class Main {
@@ -7,16 +7,21 @@ class Main {
 	private readonly clients = new Set<typeof KlingelApi.TClientInterface>();
 
 	constructor() {
-		startWebSocketServer({ port: 42319 }, async stream => {
+		startWebSocketServer({ port }, async stream => {
 			const { client } = KlingelApi.registerServerToStream(
 				stream,
 				undefined,
 				{
-					openMainDoor: async () => {
+					openMainDoor: async args => {
+						let openedDurationInMs = 3000;
+						if ("openedDurationInMs" in args) {
+							openedDurationInMs = args.openedDurationInMs;
+						}
+
 						for (const c of this.clients) {
 							c.mainDoorOpened({});
 						}
-						await this.service.openMainDoor(3000);
+						await this.service.openMainDoor(openedDurationInMs);
 					},
 					openWgDoor: async () => {
 						for (const c of this.clients) {
