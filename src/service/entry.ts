@@ -6,21 +6,8 @@ class Main {
 	private readonly service = Service.getInstance();
 	private readonly clients = new Set<typeof KlingelApi.TClientInterface>();
 
-	private async shutdown() {
-		console.log("Exiting gracefully...");
-		await this.service.dispose();
-		process.exit();
-	}
-
 	constructor() {
-		for (const signal of [
-			"SIGHUP",
-			"SIGINT",
-			"SIGTERM",
-			"SIGCONT",
-		] as const) {
-			process.on(signal, () => this.shutdown());
-		}
+		this.registerSignalHandler();
 
 		startWebSocketServer({ port }, async stream => {
 			const { client } = KlingelApi.registerServerToStream(
@@ -59,6 +46,25 @@ class Main {
 			await stream.onClosed;
 			this.clients.delete(client);
 		});
+	}
+
+	private async registerSignalHandler() {
+		await this.service.onReady;
+
+		for (const signal of [
+			"SIGHUP",
+			"SIGINT",
+			"SIGTERM",
+			"SIGCONT",
+		] as const) {
+			process.on(signal, () => this.shutdown());
+		}
+	}
+
+	private async shutdown() {
+		console.log("Exiting gracefully...");
+		await this.service.dispose();
+		process.exit();
 	}
 }
 

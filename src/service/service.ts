@@ -23,6 +23,8 @@ export class Service {
 		});
 	}
 
+	public readonly onReady = this.initializedBarrier.onUnlocked.then(() => {});
+
 	public async openMainDoor(openedDurationInMs: number): Promise<void> {
 		const s = await this.initializedBarrier.onUnlocked;
 		await s.openMainDoor(openedDurationInMs);
