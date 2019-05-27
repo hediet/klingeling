@@ -7,8 +7,8 @@ class Main {
 	private readonly clients = new Set<typeof KlingelApi.TClientInterface>();
 
 	constructor() {
-		process.on("SIGTERM", async () => {
-			console.log("tuiarem");
+		process.on("SIGINT", async () => {
+			console.log("Exiting gracefully...");
 			await this.service.dispose();
 			process.exit();
 		});
