@@ -24,6 +24,6 @@
 		"start-service": "node dist/service/index"
 	},
 	"devDependencies": {
-		"typescript": "^3.4.5"
+		"typescript": "next"
 	}
 }

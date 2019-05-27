@@ -725,10 +725,10 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^3.4.5:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
+typescript@next:
+  version "3.5.0-dev.20190525"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.0-dev.20190525.tgz#1f3cd0e35be886b2a837d7efeebdf2fff727ee44"
+  integrity sha512-+EhVvwjYE3bLN3yc5kZHylvyqRB86oqWpO2XrYImi89ErqddhNx28ms50Gt8r3dzK4LUpEUWR9p/bL1I4L8sfw==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
