@@ -39,7 +39,7 @@
     "@hediet/std" "^0.4.0"
     io-ts "^1.8.3"
 
-"@hediet/typed-json-rpc@^0.7.3":
+"@hediet/typed-json-rpc@^0.7.5":
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/@hediet/typed-json-rpc/-/typed-json-rpc-0.7.5.tgz#3809861bd52f2a633ca2fd148b4386bacfd7d13d"
   integrity sha512-UFxD8OIkQUEZH1xDsxF1HF9DcXqH8c75LPX6GUPijUxe8RFY/f1GF9XuPnr8um3G3ZMZ2G5JQy4V4Ots7uzl7Q==
