@@ -1,72 +1,58 @@
-import { NestFactory } from "@nestjs/core";
-import { Module, Controller, Get, Post } from "@nestjs/common";
 import { KlingelApi } from "./service/api";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
+import express = require("express");
+import basicAuth = require("express-basic-auth");
 
-@Controller()
-export class MainController {
-	async connect(): Promise<{
-		server: typeof KlingelApi.TServerInterface;
-		dispose: () => void;
-	}> {
-		const stream = await WebSocketStream.connectTo({
-			host: "klingelpi",
-			port: 42319,
-		});
-		const { server } = KlingelApi.getServerFromStream(
-			stream,
-			undefined,
-			{}
-		);
-		return { server, dispose: () => stream.dispose() };
-	}
-
-	@Get("status")
-	async getStatus() {
-		return {
-			status: "ok",
-		};
-	}
-
-	@Post("openWgDoor")
-	async openWgDoor() {
-		const { server, dispose } = await this.connect();
-		try {
-			await server.openWgDoor({});
-		} finally {
-			dispose();
-		}
-
-		return {
-			result: "success",
-		};
-	}
-
-	@Post("openMainDoor")
-	async openMainDoor() {
-		const { server, dispose } = await this.connect();
-		try {
-			await server.openMainDoor({});
-		} finally {
-			dispose();
-		}
-
-		return {
-			result: "success",
-		};
-	}
+async function connect(): Promise<{
+	server: typeof KlingelApi.TServerInterface;
+	dispose: () => void;
+}> {
+	const stream = await WebSocketStream.connectTo({
+		host: "klingelpi",
+		port: 42319,
+	});
+	const { server } = KlingelApi.getServerFromStream(stream, undefined, {});
+	return { server, dispose: () => stream.dispose() };
 }
 
-@Module({
-	controllers: [MainController],
-})
-export class ApplicationModule {
-	constructor() {}
-}
+const app = express();
 
-async function main() {
-	const app = await NestFactory.create(ApplicationModule);
-	return await app.listen(22328);
-}
+app.use(
+	basicAuth({
+		users: { admin: "7YwW1LLq" },
+		challenge: true,
+		realm: "DBbD3nelVX4l",
+	})
+);
 
-main();
+app.get("/status", function(req, res) {
+	res.send({ status: "ok" });
+});
+
+app.post("/openWgDoor", async function(req, res) {
+	const { server, dispose } = await connect();
+	try {
+		await server.openWgDoor();
+	} finally {
+		dispose();
+	}
+
+	res.send({
+		result: "success",
+	});
+});
+
+app.post("/openMainDoor", async function(req, res) {
+	const { server, dispose } = await connect();
+	try {
+		await server.openMainDoor();
+	} finally {
+		dispose();
+	}
+
+	res.send({
+		result: "success",
+	});
+});
+
+app.listen(22328);
