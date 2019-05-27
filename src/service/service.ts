@@ -3,6 +3,7 @@ import { DigitalOutput, PULL_UP, PULL_DOWN } from "raspi-gpio";
 import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
 import { openedDurationInMsType } from "./api";
+import { Disposable } from "@hediet/std/disposable";
 
 export class Service {
 	private static instance: Service | undefined = undefined;
@@ -37,31 +38,43 @@ export class Service {
 
 	public async dispose(): Promise<void> {
 		const s = await this.initializedBarrier.onUnlocked;
+		await s.dispose();
 	}
 }
 
 class InitializedService {
+	private disposed = false;
+
+	public async dispose(): Promise<void> {
+		this.disposed = true;
+		this.reset();
+	}
+
 	private readonly mainDoorRelayOutput = new DigitalOutput({
 		pullResistor: PULL_UP,
 		pin: "GPIO3",
 	});
 
-	private mainDoorCount = 0;
+	private mainDoorThreadCount = 0;
 	public async openMainDoor(openedDurationInMs: number): Promise<void> {
+		if (this.disposed) {
+			throw new Error("Service already disposed!");
+		}
+
 		if (!openedDurationInMsType.is(openedDurationInMs)) {
 			throw new Error("Invalid time interval!");
 		}
 
-		this.mainDoorCount++;
+		this.mainDoorThreadCount++;
 		try {
-			if (this.mainDoorCount === 1) {
+			if (this.mainDoorThreadCount === 1) {
 				this.mainDoorRelayOutput.write(0);
 			}
 			await wait(openedDurationInMs);
 		} finally {
-			this.mainDoorCount--;
+			this.mainDoorThreadCount--;
 
-			if (this.mainDoorCount === 0) {
+			if (this.mainDoorThreadCount === 0) {
 				this.mainDoorRelayOutput.write(1);
 			}
 		}
@@ -78,8 +91,13 @@ class InitializedService {
 	});
 
 	constructor() {
+		this.reset();
+	}
+
+	private reset() {
 		this.wgDoorMotorCloseOutput.write(0);
 		this.wgDoorMotorOpenOutput.write(0);
+		this.mainDoorRelayOutput.write(1);
 	}
 
 	private isOpening = false;
@@ -88,30 +106,41 @@ class InitializedService {
 		openTime: number;
 		closeTime: number;
 	}): Promise<void> {
-		console.log("open");
-		const openTime = args ? args.openTime : 17600;
-		const closeTime = args ? args.closeTime : 15500;
+		if (this.disposed) {
+			throw new Error("Service already disposed!");
+		}
 
 		if (this.isOpening) {
 			return;
 		}
 
+		const openTime = args ? args.openTime : 17600;
+		const closeTime = args ? args.closeTime : 15500;
+
 		this.isOpening = true;
 
 		try {
-			this.wgDoorMotorOpenOutput.write(1);
-		} finally {
-			await wait(openTime);
-			this.wgDoorMotorOpenOutput.write(0);
-		}
+			try {
+				this.wgDoorMotorOpenOutput.write(1);
+			} finally {
+				await wait(openTime);
+				if (this.disposed) {
+					return;
+				}
+				this.wgDoorMotorOpenOutput.write(0);
+			}
 
-		try {
-			this.wgDoorMotorCloseOutput.write(1);
-			await wait(closeTime);
+			try {
+				this.wgDoorMotorCloseOutput.write(1);
+				await wait(closeTime);
+			} finally {
+				if (this.disposed) {
+					return;
+				}
+				this.wgDoorMotorCloseOutput.write(0);
+			}
 		} finally {
-			this.wgDoorMotorCloseOutput.write(0);
+			this.isOpening = false;
 		}
-
-		this.isOpening = false;
 	}
 }
