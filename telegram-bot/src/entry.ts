@@ -101,6 +101,11 @@ class Main {
 				[
 					"-i",
 					"concat:" + fnames.concat("|"),
+					"-f",
+					"lavfi", // add silent audio track to prevent gif
+					"-i",
+					"anullsrc",
+					"-shortest", // anullsrc is infinite
 					"-c:v",
 					"copy",
 					"-f",
@@ -111,6 +116,7 @@ class Main {
 					encoding: "buffer",
 				}
 			);
+			this.log("video size", stdout.byteLength);
 
 			ctx.replyWithVideo({ source: stdout });
 		});
