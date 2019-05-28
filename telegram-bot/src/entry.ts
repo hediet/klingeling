@@ -22,8 +22,6 @@ class Main {
 	>;
 
 	constructor() {
-		this.klingelService = connectToKlingelService();
-
 		const bot = new Telegraf(config.telegramToken);
 		const menu = new TelegrafInlineMenu(
 			ctx => `Hey ${ctx.from!.first_name}!`
@@ -58,6 +56,15 @@ class Main {
 		});
 		bot.use(menu.init());
 		bot.launch();
+
+		this.klingelService = connectToKlingelService({
+			bellRinged: () => {
+				this.log("got doorbell ring");
+				for (const chat of config.admins) {
+					bot.telegram.sendMessage(chat, "The doorbell just rang!");
+				}
+			},
+		});
 	}
 
 	private log(...args: any[]) {
@@ -78,7 +85,7 @@ class Main {
 		const klingelService = await this.klingelService;
 		await klingelService.openMainDoor();
 
-		ctx.replyWithMarkdown("Opening door for 1.5 seconds...");
+		ctx.replyWithMarkdown("Opening door...");
 	}
 }
 

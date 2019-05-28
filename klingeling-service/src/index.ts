@@ -4,14 +4,18 @@ import { Disposable } from "@hediet/std/disposable";
 
 export { port, KlingelApi };
 
-export async function connectToKlingelService(): Promise<
-	typeof KlingelApi.TServerInterface & Disposable
-> {
+export async function connectToKlingelService(
+	handler: typeof KlingelApi.TClientHandler = {}
+): Promise<typeof KlingelApi.TServerInterface & Disposable> {
 	const stream = await WebSocketStream.connectTo({
 		host: "klingelpi",
 		port,
 	});
-	const { server } = KlingelApi.getServerFromStream(stream, undefined, {});
+	const { server } = KlingelApi.getServerFromStream(
+		stream,
+		undefined,
+		handler
+	);
 
 	return Object.assign({}, server, { dispose: () => stream.dispose() });
 }
