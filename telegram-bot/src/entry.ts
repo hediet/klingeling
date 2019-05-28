@@ -82,7 +82,7 @@ class Main {
 			const wantSegmentCount = Math.ceil(+seconds / c.chunkLengthSeconds);
 			const chunkNames = allChunkNames
 				.sort((a, b) => a.localeCompare(b))
-				.slice(-3);
+				.slice(-wantSegmentCount);
 
 			ctx.reply(
 				`Here's the last ${wantSegmentCount *
