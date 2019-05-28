@@ -95,7 +95,7 @@ class Main {
 				...chunkNames.map(c => fs.readFile(c)),
 			]));*/
 			// ctx.reply("Last ")
-
+			const tmpVidFname = "/tmp/out-vid.mp4";
 			const { stdout, stderr } = await execFile(
 				"ffmpeg",
 				[
@@ -109,17 +109,18 @@ class Main {
 					"-c:v",
 					"copy",
 					"-f",
-					"matroska",
-					"-",
-				],
-				{
+					"mp4",
+					"-y",
+					tmpVidFname,
+				]
+				/*{
 					encoding: "buffer",
 					maxBuffer: 20 * 1000 * 1000,
-				}
+				}*/
 			);
-			this.log("video size", stdout.byteLength);
+			//this.log("video size", stdout.byteLength);
 
-			ctx.replyWithVideo({ source: stdout });
+			ctx.replyWithVideo({ source: tmpVidFname });
 		});
 		bot.launch();
 		this.log("Bot active.");
