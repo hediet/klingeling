@@ -114,6 +114,7 @@ class Main {
 				],
 				{
 					encoding: "buffer",
+					maxBuffer: 20 * 1000 * 1000,
 				}
 			);
 			this.log("video size", stdout.byteLength);
