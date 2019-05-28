@@ -4,8 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "tsc --watch",
-		"build": "tsc",
-		"start": "node dist/entry"
+		"build": "echo why would you want to build",
+		"start": "ts-node --transpile-only src/entry.ts"
 	},
 	"dependencies": {
 		"@hediet/config": "^0.1.1",
