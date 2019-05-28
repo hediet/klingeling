@@ -5,5 +5,22 @@
 		"http-server",
 		"klingeling-service",
 		"telegram-bot"
-	]
+	],
+	"devDependencies": {
+		"husky": ">=1",
+		"lint-staged": ">=8",
+		"prettier": "^1.17.1",
+		"typescript": "next"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{js,ts,tsx,jsx,css,json,md}": [
+			"prettier --write",
+			"git add"
+		]
+	}
 }
