@@ -89,6 +89,7 @@ class Main {
 					c.chunkLengthSeconds} seconds of video:`
 			);
 			const fnames = [c.initSegment, ...chunkNames];
+			this.log("chunks", fnames);
 
 			/*const file = Buffer.concat(await Promise.all([
 				fs.readFile(c.initSegment),
