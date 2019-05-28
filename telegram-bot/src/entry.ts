@@ -109,7 +109,7 @@ class Main {
 					"-c:v",
 					"copy",
 					"-f",
-					"mastroska",
+					"matroska",
 					"-",
 				],
 				{
