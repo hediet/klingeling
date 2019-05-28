@@ -5,6 +5,10 @@ const TelegrafInlineMenu = (_TelegrafInlineMenu as any) as typeof _TelegrafInlin
 import { newConfigDescription } from "@hediet/config";
 import { Disposable } from "@hediet/std/disposable";
 import { type, string, array } from "io-ts";
+import { promises as fs } from "fs";
+import { promisify } from "util";
+import _glob from "glob";
+const glob = promisify(_glob);
 
 const configDescription = newConfigDescription({
 	appId: "telegram-bot",
@@ -12,6 +16,10 @@ const configDescription = newConfigDescription({
 	type: type({
 		telegramToken: string,
 		admins: array(string),
+		videoFeed: type({
+			initSegment: string,
+			chunkSegmentGlob: string,
+		}),
 	}),
 });
 const config = configDescription.load();
@@ -55,6 +63,21 @@ class Main {
 			}
 		});
 		bot.use(menu.init());
+
+		bot.command("/video", async ctx => {
+			const allChunkNames = await glob(config.videoFeed.chunkSegmentGlob);
+			const chunkNames = allChunkNames
+				.sort((a, b) => a.localeCompare(b))
+				.slice(-3);
+
+			const chunks = await Promise.all([
+				fs.readFile(config.videoFeed.initSegment),
+				...chunkNames.map(c => fs.readFile(c)),
+			]);
+			// ctx.reply("Last ")
+
+			ctx.replyWithVideo({ source: Buffer.concat(chunks) });
+		});
 		bot.launch();
 
 		this.klingelService = connectToKlingelService({
