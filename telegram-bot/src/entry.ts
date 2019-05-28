@@ -4,7 +4,7 @@ import _TelegrafInlineMenu = require("telegraf-inline-menu");
 const TelegrafInlineMenu = (_TelegrafInlineMenu as any) as typeof _TelegrafInlineMenu.default;
 import { newConfigDescription } from "@hediet/config";
 import { Disposable } from "@hediet/std/disposable";
-import { type, string, array } from "io-ts";
+import { type, string, array, number } from "io-ts";
 import { promises as fs } from "fs";
 import { promisify } from "util";
 import _glob from "glob";
@@ -19,6 +19,7 @@ const configDescription = newConfigDescription({
 		videoFeed: type({
 			initSegment: string,
 			chunkSegmentGlob: string,
+			chunkLengthSeconds: number,
 		}),
 	}),
 });
@@ -65,13 +66,21 @@ class Main {
 		bot.use(menu.init());
 
 		bot.command("/video", async ctx => {
-			const allChunkNames = await glob(config.videoFeed.chunkSegmentGlob);
+			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
+			const c = config.videoFeed;
+			const allChunkNames = await glob(c.chunkSegmentGlob);
+			const wantSegmentCount = Math.ceil(+seconds / c.chunkLengthSeconds);
 			const chunkNames = allChunkNames
 				.sort((a, b) => a.localeCompare(b))
 				.slice(-3);
 
+			ctx.reply(
+				`Here's the last ${wantSegmentCount *
+					c.chunkLengthSeconds} seconds of video:`
+			);
+
 			const chunks = await Promise.all([
-				fs.readFile(config.videoFeed.initSegment),
+				fs.readFile(c.initSegment),
 				...chunkNames.map(c => fs.readFile(c)),
 			]);
 			// ctx.reply("Last ")
@@ -79,6 +88,7 @@ class Main {
 			ctx.replyWithVideo({ source: Buffer.concat(chunks) });
 		});
 		bot.launch();
+		this.log("Bot active.");
 
 		this.klingelService = connectToKlingelService({
 			bellRinged: () => {
