@@ -100,7 +100,7 @@ class Main {
 				"ffmpeg",
 				[
 					"-i",
-					"concat:" + fnames.concat("|"),
+					"concat:" + fnames.join("|"),
 					"-f",
 					"lavfi", // add silent audio track to prevent gif
 					"-i",
