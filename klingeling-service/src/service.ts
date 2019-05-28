@@ -3,7 +3,6 @@ import { DigitalOutput, PULL_UP, PULL_DOWN } from "raspi-gpio";
 import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
 import { openedDurationInMsType } from "./api";
-import { Disposable } from "@hediet/std/disposable";
 
 export class Service {
 	private static instance: Service | undefined = undefined;

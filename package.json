@@ -1,29 +1,9 @@
 {
-	"name": "klingeling",
-	"version": "1.0.0",
-	"main": "index.js",
-	"license": "MIT",
-	"dependencies": {
-		"@hediet/std": "^0.4.0",
-		"@hediet/typed-json-rpc": "^0.7.5",
-		"@hediet/typed-json-rpc-websocket": "^0.6.0",
-		"@hediet/typed-json-rpc-websocket-server": "^0.6.0",
-		"@types/express": "^4.16.1",
-		"@types/raspi-gpio": "^6.0.0",
-		"express": "^4.17.1",
-		"express-basic-auth": "^1.2.0",
-		"raspi": "^6.0.1",
-		"ws": "^7.0.0"
-	},
-	"optionalDependencies": {
-		"raspi-gpio": "^6.2.1"
-	},
-	"scripts": {
-		"dev": "tsc --watch",
-		"build": "tsc",
-		"start-service": "node dist/service/index"
-	},
-	"devDependencies": {
-		"typescript": "next"
-	}
+	"private": true,
+	"workspaces": [
+		"cli-client",
+		"http-server",
+		"klingeling-service",
+		"telegram-bot"
+	]
 }
