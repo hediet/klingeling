@@ -3,7 +3,7 @@ import {
 	requestContract,
 	notificationContract,
 } from "@hediet/typed-json-rpc";
-import { number, union, type, refinement } from "io-ts";
+import { number, union, type, refinement, boolean } from "io-ts";
 
 export const port = 42319;
 
@@ -29,11 +29,21 @@ export const KlingelApi = contract({
 				closeTime: number,
 			}),
 		}),
-		notifyBellHasRung: requestContract({}),
+		bellStateChanged: requestContract({
+			params: type({
+				isRinging: boolean,
+				isBroken: boolean,
+			}),
+		}),
 	},
 	client: {
 		mainDoorOpened: notificationContract({}),
 		wgDoorOpened: notificationContract({}),
-		bellRinged: notificationContract({}),
+		bellStateChanged: notificationContract({
+			params: type({
+				isRinging: boolean,
+				isBroken: boolean,
+			}),
+		}),
 	},
 });

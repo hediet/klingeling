@@ -1,5 +1,5 @@
 {
-	"name": "@klingeling/client",
+	"name": "@klingeling/ring-notifier",
 	"private": true,
 	"version": "0.1.0",
 	"scripts": {

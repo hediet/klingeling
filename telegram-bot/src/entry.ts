@@ -36,8 +36,10 @@ class Main {
 		typeof KlingelApi.TServerInterface & Disposable
 	>;
 
+	private bot: Telegraf<ContextMessageUpdate>;
+
 	constructor() {
-		const bot = new Telegraf(config.telegramToken);
+		this.bot = new Telegraf(config.telegramToken);
 		const menu = new TelegrafInlineMenu(
 			ctx => `Hey ${ctx.from!.first_name}!`
 		);
@@ -46,7 +48,7 @@ class Main {
 			doFunc: ctx => this.open(ctx),
 		});
 
-		bot.use((ctx, next) => {
+		this.bot.use((ctx, next) => {
 			if (
 				next &&
 				ctx.from &&
@@ -69,71 +71,88 @@ class Main {
 				);
 			}
 		});
-		bot.use(menu.init());
+		this.bot.use(menu.init());
 
-		bot.command("/video", async ctx => {
+		this.bot.command("/video", async ctx => {
 			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
-			const c = config.videoFeed;
-			if (c === null) {
-				ctx.reply("video config not set");
-				return;
-			}
-			const allChunkNames = await glob(c.chunkSegmentGlob);
-			const wantSegmentCount = Math.ceil(+seconds / c.chunkLengthSeconds);
-			const chunkNames = allChunkNames
-				.sort((a, b) => a.localeCompare(b))
-				.slice(-wantSegmentCount);
-
-			ctx.reply(
-				`Here's the last ${wantSegmentCount *
-					c.chunkLengthSeconds} seconds of video:`
-			);
-			const fnames = [c.initSegment, ...chunkNames];
-			this.log("chunks", fnames);
-
-			/*const file = Buffer.concat(await Promise.all([
-				fs.readFile(c.initSegment),
-				...chunkNames.map(c => fs.readFile(c)),
-			]));*/
-			// ctx.reply("Last ")
-			const tmpVidFname = "/tmp/out-vid.mp4";
-			const { stdout, stderr } = await execFile(
-				"ffmpeg",
-				[
-					"-i",
-					"concat:" + fnames.join("|"),
-					"-f",
-					"lavfi", // add silent audio track to prevent gif
-					"-i",
-					"anullsrc",
-					"-shortest", // anullsrc is infinite
-					"-c:v",
-					"copy",
-					"-f",
-					"mp4",
-					"-y",
-					tmpVidFname,
-				]
-				/*{
-					encoding: "buffer",
-					maxBuffer: 20 * 1000 * 1000,
-				}*/
-			);
-			//this.log("video size", stdout.byteLength);
-
-			ctx.replyWithVideo({ source: tmpVidFname });
+			await this.sendVideo(ctx.chat!.id, +seconds);
 		});
-		bot.launch();
+
+		this.bot.launch();
 		this.log("Bot active.");
 
 		this.klingelService = connectToKlingelService({
-			bellRinged: () => {
-				this.log("got doorbell ring");
+			bellStateChanged: args => {
+				this.log("door bell state changed: " + JSON.stringify(args));
 				for (const chat of config.admins) {
-					bot.telegram.sendMessage(chat, "The doorbell just rang!");
+					if (args.isRinging) {
+						this.bot.telegram.sendMessage(
+							chat,
+							"The doorbell just rang!"
+						);
+						this.sendVideo(chat);
+					} else if (args.isBroken) {
+						this.bot.telegram.sendMessage(
+							chat,
+							"The doorbell just broke! :("
+						);
+					}
 				}
 			},
 		});
+	}
+
+	private async sendVideo(chatId: string | number, seconds: number = 10) {
+		const c = config.videoFeed;
+		if (c === null) {
+			this.bot.telegram.sendMessage(chatId, "video config not set");
+			return;
+		}
+		const allChunkNames = await glob(c.chunkSegmentGlob);
+		const wantSegmentCount = Math.ceil(seconds / c.chunkLengthSeconds);
+		const chunkNames = allChunkNames
+			.sort((a, b) => a.localeCompare(b))
+			.slice(-wantSegmentCount);
+
+		this.bot.telegram.sendMessage(
+			chatId,
+			`Here's the last ${wantSegmentCount *
+				c.chunkLengthSeconds} seconds of video:`
+		);
+		const fnames = [c.initSegment, ...chunkNames];
+		this.log("chunks", fnames);
+
+		/*const file = Buffer.concat(await Promise.all([
+			fs.readFile(c.initSegment),
+			...chunkNames.map(c => fs.readFile(c)),
+		]));*/
+		// ctx.reply("Last ")
+		const tmpVidFname = "/tmp/out-vid.mp4";
+		const { stdout, stderr } = await execFile(
+			"ffmpeg",
+			[
+				"-i",
+				"concat:" + fnames.join("|"),
+				"-f",
+				"lavfi", // add silent audio track to prevent gif
+				"-i",
+				"anullsrc",
+				"-shortest", // anullsrc is infinite
+				"-c:v",
+				"copy",
+				"-f",
+				"mp4",
+				"-y",
+				tmpVidFname,
+			]
+			/*{
+				encoding: "buffer",
+				maxBuffer: 20 * 1000 * 1000,
+			}*/
+		);
+		//this.log("video size", stdout.byteLength);
+
+		this.bot.telegram.sendVideo(chatId, { source: tmpVidFname });
 	}
 
 	private log(...args: any[]) {

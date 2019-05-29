@@ -7,8 +7,8 @@ const closeTime = parseInt(process.argv[3], 10);*/
 
 async function main() {
 	const klingelService = await connectToKlingelService({
-		bellRinged: () => {
-			console.log("bell ringed");
+		bellStateChanged: args => {
+			console.log("bell: ", args);
 		},
 	});
 	//await klingelService.openWgDoor();
