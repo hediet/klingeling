@@ -7,12 +7,11 @@ main();
 
 async function main() {
 	const klingelService = await connectToKlingelService();
-	await klingelService.openWgDoor();
 
 	const uid = "trigger-ring-does-not-exist";
 
 	const cp = spawn("soundmeter", [
-		"-t 15000",
+		"-t 15",
 		"2",
 		"--segment 0.1",
 		"-p test",
