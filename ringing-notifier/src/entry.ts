@@ -10,14 +10,13 @@ async function main() {
 
 	const uid = "trigger-ring-does-not-exist";
 
-	const cp = spawn("soundmeter", [
-		"-t 15",
-		"2",
-		"--segment 0.1",
-		"-p test",
-		"-a exec",
-		`-e ./${uid}.sh`,
-	]);
+	const cp = spawn(
+		"soundmeter",
+		["-t 15", "2", "--segment 0.1", "-p test", "-a exec", `-e ./${uid}.sh`],
+		{
+			stdio: "pipe",
+		}
+	);
 
 	cp.stdout.on("data", data => {
 		console.log(data, data.toString());
