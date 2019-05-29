@@ -22,7 +22,7 @@ async function main() {
 		if (str.indexOf("Exec Action triggered") !== -1) {
 			if (!timeout) {
 				console.log("ringing started");
-				timeout = new ResettableTimeout(200);
+				timeout = new ResettableTimeout(500);
 				klingelService.notifyBellHasRung();
 				timeout.onTimeout.then(() => {
 					console.log("ringing stopped");
