@@ -24,4 +24,7 @@ async function main() {
 	cp.stdout.on("error", data => {
 		console.log(data, data.toString());
 	});
+	cp.stderr.on("data", data => {
+		console.log(data, data.toString());
+	});
 }
