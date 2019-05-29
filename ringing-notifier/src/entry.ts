@@ -72,6 +72,7 @@ class Soundmeter {
 			if (str.indexOf("Exec Action triggered") !== -1) {
 				actionTriggered.emit();
 			}
+			console.log("...triggered");
 		});
 
 		let timeout: ResettableTimeout | undefined = undefined;

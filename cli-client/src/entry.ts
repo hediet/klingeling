@@ -11,6 +11,7 @@ async function main() {
 			console.log("bell: ", args);
 		},
 	});
+	klingelService.bellStateChanged({ isRinging: true, isBroken: false });
 	//await klingelService.openWgDoor();
 
 	klingelService.dispose();
