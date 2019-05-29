@@ -1,14 +1,11 @@
 import { connectToKlingelService } from "@klingeling/service";
 import { spawn } from "child_process";
-
-const ringringFifo = process.argv[2];
+import { ResettableTimeout } from "@hediet/std/timer";
 
 main();
 
 async function main() {
 	const klingelService = await connectToKlingelService();
-
-	const uid = "trigger-ring-does-not-exist";
 
 	const cp = spawn(
 		"soundmeter",
@@ -18,13 +15,22 @@ async function main() {
 		}
 	);
 
+	let timeout: ResettableTimeout | undefined = undefined;
+
 	cp.stdout.on("data", data => {
-		console.log(data, data.toString());
-	});
-	cp.stdout.on("error", data => {
-		console.log(data, data.toString());
-	});
-	cp.stderr.on("data", data => {
-		console.log(data, data.toString());
+		const str: string = data.toString();
+		if (str.indexOf("Exec Action triggered") !== -1) {
+			if (!timeout) {
+				console.log("ringing started");
+				timeout = new ResettableTimeout(200);
+				klingelService.notifyBellHasRung();
+				timeout.onTimeout.then(() => {
+					console.log("ringing stopped");
+					timeout = undefined;
+				});
+			}
+
+			timeout!.reset();
+		}
 	});
 }
