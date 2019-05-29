@@ -1,6 +1,8 @@
 import { startWebSocketServer } from "@hediet/typed-json-rpc-websocket-server";
 import { KlingelApi, port } from "./api";
 import { Service } from "./service";
+import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
+import { ConsoleStreamLogger } from "@hediet/typed-json-rpc";
 
 class Main {
 	private readonly service = Service.getInstance();
@@ -11,8 +13,8 @@ class Main {
 
 		startWebSocketServer({ port }, async stream => {
 			const { client } = KlingelApi.registerServerToStream(
-				stream,
-				undefined,
+				new ConsoleStreamLogger(stream),
+				new ConsoleRpcLogger(),
 				{
 					openMainDoor: async args => {
 						let openedDurationInMs = 3000;
@@ -42,9 +44,11 @@ class Main {
 				}
 			);
 
+			console.log("client connected ", stream.toString());
 			this.clients.add(client);
 			await stream.onClosed;
 			this.clients.delete(client);
+			console.log("client disconnected ", stream.toString());
 		});
 	}
 

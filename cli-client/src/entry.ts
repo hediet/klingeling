@@ -6,8 +6,12 @@ main();
 const closeTime = parseInt(process.argv[3], 10);*/
 
 async function main() {
-	const klingelService = await connectToKlingelService();
-	await klingelService.openWgDoor();
+	const klingelService = await connectToKlingelService({
+		bellRinged: () => {
+			console.log("bell ringed");
+		},
+	});
+	//await klingelService.openWgDoor();
 
 	klingelService.dispose();
 }
