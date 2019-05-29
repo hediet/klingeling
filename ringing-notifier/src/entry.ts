@@ -70,9 +70,9 @@ class Soundmeter {
 		cp.stdout.on("data", data => {
 			const str: string = data.toString();
 			if (str.indexOf("Exec Action triggered") !== -1) {
+				console.log("...triggered");
 				actionTriggered.emit();
 			}
-			console.log("...triggered");
 		});
 
 		let timeout: ResettableTimeout | undefined = undefined;
