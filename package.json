@@ -4,7 +4,8 @@
 		"cli-client",
 		"http-server",
 		"klingeling-service",
-		"telegram-bot"
+		"telegram-bot",
+		"ringing-notifier"
 	],
 	"devDependencies": {
 		"husky": ">=1",
