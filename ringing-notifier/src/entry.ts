@@ -9,7 +9,7 @@ async function main() {
 
 	const cp = spawn(
 		"soundmeter",
-		["-t", "15", "2", "--segment", "0.1", "-p", "test", "-a", "exec"],
+		["-t", "15000", "2", "--segment", "0.1", "-p", "test", "-a", "exec"],
 		{
 			stdio: "pipe",
 		}
