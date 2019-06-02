@@ -4,13 +4,16 @@ import basicAuth = require("express-basic-auth");
 
 const app = express();
 
-app.use(
-	basicAuth({
-		users: { admin: "7YwW1LLq" },
-		challenge: true,
-		realm: "DBbD3nelVX4l",
-	})
-);
+if (false) {
+	// uses nginx authentication now.
+	app.use(
+		basicAuth({
+			users: { admin: "7YwW1LLq" },
+			challenge: true,
+			realm: "DBbD3nelVX4l",
+		})
+	);
+}
 
 app.get("/status", function(req, res) {
 	res.send({ status: "ok" });
