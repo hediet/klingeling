@@ -1,4 +1,5 @@
 import { connectToKlingelService } from "@klingeling/service";
+import { wait } from "@hediet/std/timer";
 
 main();
 
@@ -11,7 +12,12 @@ async function main() {
 			console.log("bell: ", args);
 		},
 	});
-	klingelService.bellStateChanged({ isRinging: true, isBroken: false });
+	await klingelService.bellStateChanged({ isRinging: true, isBroken: false });
+	await wait(500);
+	await klingelService.bellStateChanged({
+		isRinging: false,
+		isBroken: false,
+	});
 	//await klingelService.openWgDoor();
 
 	klingelService.dispose();

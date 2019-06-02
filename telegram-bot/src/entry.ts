@@ -40,14 +40,6 @@ class Main {
 
 	constructor() {
 		this.bot = new Telegraf(config.telegramToken);
-		const menu = new TelegrafInlineMenu(
-			ctx => `Hey ${ctx.from!.first_name}!`
-		);
-		menu.setCommand("start");
-		menu.simpleButton("Hold the dooor!", "a", {
-			doFunc: ctx => this.open(ctx),
-		});
-
 		this.bot.use((ctx, next) => {
 			if (
 				next &&
@@ -71,8 +63,36 @@ class Main {
 				);
 			}
 		});
-		this.bot.use(menu.init());
 
+		const menu = new TelegrafInlineMenu(
+			ctx => `Hey ${ctx.from!.first_name}!`
+		);
+		menu.setCommand("start");
+		menu.simpleButton("Hold the dooor!", "a", {
+			doFunc: ctx => this.open(ctx, "main"),
+		});
+		this.bot.use(menu.init());
+		this.bot.on(
+			"callback_query",
+			(
+				ctx: ContextMessageUpdate,
+				next?: (ctx: ContextMessageUpdate) => any
+			) => {
+				const data = (ctx.update.callback_query as any).data;
+				if (data === "openMainDoor") {
+					this.open(ctx, "main");
+				} else if (data === "openWgDoor") {
+					this.open(ctx, "wg");
+				}
+				next!(ctx);
+			}
+		);
+		this.bot.command("/openMainDoor", async ctx => {
+			await this.open(ctx, "main");
+		});
+		this.bot.command("/openWgDoor", async ctx => {
+			await this.open(ctx, "wg");
+		});
 		this.bot.command("/video", async ctx => {
 			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
 			await this.sendVideo(ctx.chat!.id, +seconds);
@@ -82,14 +102,11 @@ class Main {
 		this.log("Bot active.");
 
 		this.klingelService = connectToKlingelService({
-			bellStateChanged: args => {
+			bellStateChanged: async args => {
 				this.log("door bell state changed: " + JSON.stringify(args));
 				for (const chat of config.admins) {
 					if (args.isRinging) {
-						this.bot.telegram.sendMessage(
-							chat,
-							"The doorbell just rang!"
-						);
+						await this.sendButtons(chat, "The doorbell just rang!");
 						this.sendVideo(chat);
 					} else if (args.isBroken) {
 						this.bot.telegram.sendMessage(
@@ -98,6 +115,29 @@ class Main {
 						);
 					}
 				}
+			},
+		});
+	}
+
+	private log(...args: any[]) {
+		console.log(new Date(), ...args);
+	}
+
+	private async sendButtons(chatId: string | number, text: string) {
+		this.bot.telegram.sendMessage(chatId, text, {
+			reply_markup: {
+				inline_keyboard: [
+					[
+						{
+							text: "Open main door",
+							callback_data: "openMainDoor",
+						},
+						{
+							text: "Open room door",
+							callback_data: "openWgDoor",
+						},
+					],
+				],
 			},
 		});
 	}
@@ -152,14 +192,10 @@ class Main {
 		);
 		//this.log("video size", stdout.byteLength);
 
-		this.bot.telegram.sendVideo(chatId, { source: tmpVidFname });
+		await this.bot.telegram.sendVideo(chatId, { source: tmpVidFname });
 	}
 
-	private log(...args: any[]) {
-		console.log(new Date(), ...args);
-	}
-
-	private async open(ctx: ContextMessageUpdate) {
+	private async open(ctx: ContextMessageUpdate, door: "main" | "wg") {
 		if (!ctx.from) {
 			this.log("what?");
 			return;
@@ -171,9 +207,12 @@ class Main {
 			ctx.from.last_name
 		);
 		const klingelService = await this.klingelService;
-		await klingelService.openMainDoor();
-
 		ctx.replyWithMarkdown("Opening door...");
+		if (door === "main") {
+			await klingelService.openMainDoor();
+		} else {
+			await klingelService.openWgDoor();
+		}
 	}
 }
 
