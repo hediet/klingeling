@@ -154,11 +154,12 @@ class Main {
 			.sort((a, b) => a.localeCompare(b))
 			.slice(-wantSegmentCount);
 
-		this.bot.telegram.sendMessage(
+		/*this.bot.telegram.sendMessage(
 			chatId,
 			`Here's the last ${wantSegmentCount *
 				c.chunkLengthSeconds} seconds of video:`
-		);
+		);*/
+
 		const fnames = [c.initSegment, ...chunkNames];
 		this.log("chunks", fnames);
 
