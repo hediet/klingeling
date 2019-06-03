@@ -123,8 +123,8 @@ class InitializedService {
 		try {
 			try {
 				this.wgDoorMotorOpenOutput.write(1);
-			} finally {
 				await wait(openTime);
+			} finally {
 				if (this.disposed) {
 					return;
 				}
