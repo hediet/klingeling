@@ -42,42 +42,23 @@ class Main {
 
 	constructor() {
 		this.bot = new Telegraf(config.telegramToken);
-		this.bot.use((ctx, next) => {
-			// authentication
-			if (
-				next &&
-				ctx.from &&
-				ctx.chat &&
-				(config.admins.includes(String(ctx.from.id)) ||
-					config.admins.includes(String(ctx.chat.id)))
-			) {
-				if (ctx.chat) {
-					this.log("chat id", ctx.from.id, "=", ctx.chat.id);
-					// adminChats.add(String(ctx.chat.id))
-				}
-				(next as any)(ctx);
-			} else {
-				this.log(
-					"msg from unknown user",
-					ctx.updateType,
-					ctx.message && ctx.message.text,
-					ctx.from,
-					ctx.chat && ctx.chat!.id
-				);
-			}
+		this.bot.use(this.authenticate);
+
+		this.bot.command("/start", async ctx => {
+			if (!ctx.chat) return;
+			await this.sendButtons(ctx.chat.id, "Hello!");
+		});
+		this.bot.command("/openMainDoor", async ctx => {
+			await this.openDoor(ctx, "main");
+		});
+		this.bot.command("/openWgDoor", async ctx => {
+			await this.openDoor(ctx, "wg");
+		});
+		this.bot.command("/video", async ctx => {
+			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
+			await this.sendVideo(ctx.chat!.id, +seconds);
 		});
 
-		{
-			// menu on /start
-			const menu = new TelegrafInlineMenu(
-				ctx => `Hey ${ctx.from!.first_name}!`
-			);
-			menu.setCommand("start");
-			menu.simpleButton("Hold the dooor!", "a", {
-				doFunc: ctx => this.openDoor(ctx, "main"),
-			});
-			this.bot.use(menu.init());
-		}
 		this.bot.on(
 			"callback_query",
 			(
@@ -93,16 +74,6 @@ class Main {
 				next!(ctx);
 			}
 		);
-		this.bot.command("/openMainDoor", async ctx => {
-			await this.openDoor(ctx, "main");
-		});
-		this.bot.command("/openWgDoor", async ctx => {
-			await this.openDoor(ctx, "wg");
-		});
-		this.bot.command("/video", async ctx => {
-			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
-			await this.sendVideo(ctx.chat!.id, +seconds);
-		});
 
 		this.bot.launch();
 		this.log("Bot active.");
@@ -123,6 +94,33 @@ class Main {
 				}
 			},
 		});
+	}
+
+	private authenticate(
+		ctx: ContextMessageUpdate,
+		next?: (ctx: ContextMessageUpdate) => void
+	) {
+		// authentication
+		if (
+			next &&
+			ctx.from &&
+			ctx.chat &&
+			(config.admins.includes(String(ctx.from.id)) ||
+				config.admins.includes(String(ctx.chat.id)))
+		) {
+			if (ctx.chat) {
+				this.log("chat id", ctx.from.id, "=", ctx.chat.id);
+			}
+			next(ctx);
+		} else {
+			this.log(
+				"msg from unknown user",
+				ctx.updateType,
+				ctx.message && ctx.message.text,
+				ctx.from,
+				ctx.chat && ctx.chat!.id
+			);
+		}
 	}
 
 	private log(...args: any[]) {
