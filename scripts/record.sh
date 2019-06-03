@@ -1,5 +1,6 @@
 # create a ramdisk and record from webcam to MP4 DASH segments, keeping a history of 100 segments of 3 seconds each
-
+# can't use the hardware encoder (h264_omx) because it doesn't support zerolatency :(
+    
 mkdir -p ramdisk
 mountpoint ramdisk || sudo mount -t tmpfs none ramdisk
 rm ramdisk/*
