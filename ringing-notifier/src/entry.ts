@@ -1,104 +1,69 @@
-import { Disposable } from "@hediet/std/disposable";
-import { EventEmitter, EventSource } from "@hediet/std/events";
-import { ResettableTimeout, startTimeout } from "@hediet/std/timer";
 import { connectToKlingelService } from "@klingeling/service";
 import { spawn } from "child_process";
+import { fromEvent, merge, Observable, of } from "rxjs";
+import {
+	concatMap,
+	debounceTime,
+	filter,
+	map,
+	mapTo,
+	take,
+	throttle,
+	timeoutWith,
+} from "rxjs/operators";
 
 main();
 
-interface Observable<T> {
-	value: T;
-	onChange: EventSource<{ newValue: T; oldValue: T }, Observable<T>>;
-}
-
-class SimpleObservable<T> implements Observable<T> {
-	private _value: T;
-	private changeEmitter = new EventEmitter<
-		{ newValue: T; oldValue: T },
-		Observable<T>
-	>();
-
-	public onChange = this.changeEmitter.asEvent();
-
-	constructor(initialValue: T) {
-		this._value = initialValue;
-	}
-
-	public get value(): T {
-		return this._value;
-	}
-
-	public setValue(newValue: T) {
-		if (newValue !== this._value) {
-			const oldValue = this._value;
-			this._value = newValue;
-			this.changeEmitter.emit({ newValue, oldValue }, this);
-		}
-	}
-
-	public asObservable(): Observable<T> {
-		return this;
-	}
-}
-
+const soundmeterArgs = [
+	"--trigger",
+	"15000", // RMS > 15k
+	"2", // for two frames
+	"--segment", // of length 100ms
+	"0.1",
+	"-p",
+	"test",
+	"-a",
+	"exec",
+];
 class Soundmeter {
-	private isRingingObservable = new SimpleObservable<boolean | "broken">(
-		false
-	);
-	public isRinging = this.isRingingObservable.asObservable();
-
+	ringingEdges: Observable<boolean | "broken">;
 	constructor() {
-		const cp = spawn(
-			"soundmeter",
-			[
-				"-t",
-				"15000",
-				"2",
-				"--segment",
-				"0.1",
-				"-p",
-				"test",
-				"-a",
-				"exec",
-			],
-			{
-				stdio: "pipe",
-			}
+		// soundmeter is a simple python library that measures loudness as RMS of amplitude over time frames, that you can use as a trigger
+		// see https://pypi.org/project/soundmeter/
+		const soundmeter = spawn("soundmeter", soundmeterArgs, {
+			stdio: "pipe",
+		});
+
+		const ringing = fromEvent<Buffer>(soundmeter.stdout, "data").pipe(
+			map(data => data.toString()),
+			filter(data => data.includes("Exec Action triggered")),
+			mapTo("RINGRING" as const)
 		);
 
-		const actionTriggered = new EventEmitter();
-		cp.stdout.on("data", data => {
-			const str: string = data.toString();
-			if (str.indexOf("Exec Action triggered") !== -1) {
-				console.log("...triggered");
-				actionTriggered.emit();
-			}
-		});
+		const trailingEdge = ringing.pipe(
+			debounceTime(500),
+			mapTo(false)
+		);
 
-		let timeout: ResettableTimeout | undefined = undefined;
-		actionTriggered.sub(() => {
-			if (!timeout) {
-				this.isRingingObservable.setValue(true);
-				timeout = new ResettableTimeout(500);
-				timeout.onTimeout.then(() => {
-					this.isRingingObservable.setValue(false);
-					timeout = undefined;
-				});
-			} else {
-				timeout.reset();
-			}
-		});
+		const leadingEdge = ringing.pipe(
+			throttle(() => trailingEdge),
+			mapTo(true)
+		);
 
-		let brokenTimeout: Disposable = Disposable.empty;
-		this.isRinging.onChange.sub(({ newValue }) => {
-			if (newValue) {
-				brokenTimeout = startTimeout(10 * 1000, () => {
-					this.isRingingObservable.setValue("broken");
-				});
-			} else {
-				brokenTimeout.dispose();
-			}
-		});
+		// the microphone is crap and has a loose connection
+		// set state to broken if it seems like someone is ringing for 10+ seconds
+		// (this is buggy, todo: figure out how rxjs works)
+		const brokenEdge = leadingEdge.pipe(
+			concatMap(() =>
+				trailingEdge.pipe(
+					take(1),
+					timeoutWith(10000, of("broken" as const)),
+					filter(e => e === "broken")
+				)
+			)
+		);
+
+		this.ringingEdges = merge(leadingEdge, trailingEdge, brokenEdge);
 	}
 }
 
@@ -106,7 +71,7 @@ async function main() {
 	const klingelService = await connectToKlingelService();
 
 	const soundmeter = new Soundmeter();
-	soundmeter.isRinging.onChange.sub(({ newValue }) => {
+	soundmeter.ringingEdges.subscribe(newValue => {
 		if (newValue === true) {
 			console.log("ringing started");
 		} else if (newValue === false) {

@@ -42,7 +42,7 @@ class Main {
 
 	constructor() {
 		this.bot = new Telegraf(config.telegramToken);
-		this.bot.use(this.authenticate);
+		this.bot.use(this.authenticate.bind(this));
 
 		this.bot.command("/start", async ctx => {
 			if (!ctx.chat) return;
@@ -100,7 +100,6 @@ class Main {
 		ctx: ContextMessageUpdate,
 		next?: (ctx: ContextMessageUpdate) => void
 	) {
-		// authentication
 		if (
 			next &&
 			ctx.from &&
