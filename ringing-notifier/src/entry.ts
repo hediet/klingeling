@@ -1,8 +1,8 @@
+import { Disposable } from "@hediet/std/disposable";
+import { EventEmitter, EventSource } from "@hediet/std/events";
+import { ResettableTimeout, startTimeout } from "@hediet/std/timer";
 import { connectToKlingelService } from "@klingeling/service";
 import { spawn } from "child_process";
-import { ResettableTimeout, startTimeout } from "@hediet/std/timer";
-import { EventSource, EventEmitter } from "@hediet/std/events";
-import { Disposable } from "@hediet/std/disposable";
 
 main();
 

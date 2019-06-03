@@ -1,15 +1,17 @@
-import { KlingelApi, connectToKlingelService } from "@klingeling/service";
-import Telegraf, { ContextMessageUpdate } from "telegraf";
-import _TelegrafInlineMenu = require("telegraf-inline-menu");
-const TelegrafInlineMenu = (_TelegrafInlineMenu as any) as typeof _TelegrafInlineMenu.default;
 import { newConfigDescription } from "@hediet/config";
 import { Disposable } from "@hediet/std/disposable";
-import { type, string, array, number, union } from "io-ts";
-import * as t from "io-ts";
-import { promises as fs } from "fs";
-import { promisify } from "util";
+import { connectToKlingelService, KlingelApi } from "@klingeling/service";
 import { execFile as _execFile } from "child_process";
 import _glob from "glob";
+import * as t from "io-ts";
+import { array, number, string, type, union } from "io-ts";
+import Telegraf, { ContextMessageUpdate } from "telegraf";
+import { promisify } from "util";
+
+// typings of this lib are wrong
+import _TelegrafInlineMenu = require("telegraf-inline-menu");
+const TelegrafInlineMenu = (_TelegrafInlineMenu as any) as typeof _TelegrafInlineMenu.default;
+
 const glob = promisify(_glob);
 const execFile = promisify(_execFile);
 
@@ -41,6 +43,7 @@ class Main {
 	constructor() {
 		this.bot = new Telegraf(config.telegramToken);
 		this.bot.use((ctx, next) => {
+			// authentication
 			if (
 				next &&
 				ctx.from &&
@@ -64,14 +67,17 @@ class Main {
 			}
 		});
 
-		const menu = new TelegrafInlineMenu(
-			ctx => `Hey ${ctx.from!.first_name}!`
-		);
-		menu.setCommand("start");
-		menu.simpleButton("Hold the dooor!", "a", {
-			doFunc: ctx => this.open(ctx, "main"),
-		});
-		this.bot.use(menu.init());
+		{
+			// menu on /start
+			const menu = new TelegrafInlineMenu(
+				ctx => `Hey ${ctx.from!.first_name}!`
+			);
+			menu.setCommand("start");
+			menu.simpleButton("Hold the dooor!", "a", {
+				doFunc: ctx => this.openDoor(ctx, "main"),
+			});
+			this.bot.use(menu.init());
+		}
 		this.bot.on(
 			"callback_query",
 			(
@@ -80,18 +86,18 @@ class Main {
 			) => {
 				const data = (ctx.update.callback_query as any).data;
 				if (data === "openMainDoor") {
-					this.open(ctx, "main");
+					this.openDoor(ctx, "main");
 				} else if (data === "openWgDoor") {
-					this.open(ctx, "wg");
+					this.openDoor(ctx, "wg");
 				}
 				next!(ctx);
 			}
 		);
 		this.bot.command("/openMainDoor", async ctx => {
-			await this.open(ctx, "main");
+			await this.openDoor(ctx, "main");
 		});
 		this.bot.command("/openWgDoor", async ctx => {
-			await this.open(ctx, "wg");
+			await this.openDoor(ctx, "wg");
 		});
 		this.bot.command("/video", async ctx => {
 			const [_, seconds = 10] = ctx.message!.text!.split(/\s+/g);
@@ -154,28 +160,31 @@ class Main {
 			.sort((a, b) => a.localeCompare(b))
 			.slice(-wantSegmentCount);
 
-		/*this.bot.telegram.sendMessage(
+		this.bot.telegram.sendMessage(
 			chatId,
-			`Here's the last ${wantSegmentCount *
+			`Here's the last ${chunkNames.length *
 				c.chunkLengthSeconds} seconds of video:`
-		);*/
+		);
 
 		const fnames = [c.initSegment, ...chunkNames];
 		this.log("chunks", fnames);
 
-		/*const file = Buffer.concat(await Promise.all([
+		// directly reading and concatenating MP4 DASH chunks is works, but it causes "wrong" timestamps that telegram does not like
+		/* const file = Buffer.concat(await Promise.all([
 			fs.readFile(c.initSegment),
 			...chunkNames.map(c => fs.readFile(c)),
-		]));*/
-		// ctx.reply("Last ")
-		const tmpVidFname = "/tmp/out-vid.mp4";
+		])); */
+
+		// writing to stdout has buffer size limitations
+
+		const tmpVidFname = "/tmp/out-vid.mp4"; // todo: don't hardcode
 		const { stdout, stderr } = await execFile(
 			"ffmpeg",
 			[
 				"-i",
 				"concat:" + fnames.join("|"),
 				"-f",
-				"lavfi", // add silent audio track to prevent gif
+				"lavfi", // add silent audio track to prevent telegram from converting it to a "gif"
 				"-i",
 				"anullsrc",
 				"-shortest", // anullsrc is infinite
@@ -183,7 +192,7 @@ class Main {
 				"copy",
 				"-f",
 				"mp4",
-				"-y",
+				"-y", // overwrite output file
 				tmpVidFname,
 			]
 			/*{
@@ -196,7 +205,7 @@ class Main {
 		await this.bot.telegram.sendVideo(chatId, { source: tmpVidFname });
 	}
 
-	private async open(ctx: ContextMessageUpdate, door: "main" | "wg") {
+	private async openDoor(ctx: ContextMessageUpdate, door: "main" | "wg") {
 		if (!ctx.from) {
 			this.log("what?");
 			return;

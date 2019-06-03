@@ -1,5 +1,5 @@
-import { connectToKlingelService } from "@klingeling/service";
 import { wait } from "@hediet/std/timer";
+import { connectToKlingelService } from "@klingeling/service";
 
 main();
 

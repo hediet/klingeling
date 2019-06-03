@@ -1,7 +1,7 @@
-import { init } from "raspi";
-import { DigitalOutput, PULL_UP, PULL_DOWN } from "raspi-gpio";
 import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
+import { init } from "raspi";
+import { DigitalOutput, PULL_DOWN, PULL_UP } from "raspi-gpio";
 import { openedDurationInMsType } from "./api";
 
 export class Service {

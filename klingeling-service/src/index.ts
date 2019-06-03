@@ -1,6 +1,6 @@
-import { port, KlingelApi } from "./api";
-import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { Disposable } from "@hediet/std/disposable";
+import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
+import { KlingelApi, port } from "./api";
 
 export { port, KlingelApi };
 

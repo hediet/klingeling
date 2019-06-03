@@ -1,8 +1,7 @@
+import { ConsoleRpcLogger, ConsoleStreamLogger } from "@hediet/typed-json-rpc";
 import { startWebSocketServer } from "@hediet/typed-json-rpc-websocket-server";
 import { KlingelApi, port } from "./api";
 import { Service } from "./service";
-import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { ConsoleStreamLogger } from "@hediet/typed-json-rpc";
 
 class Main {
 	private readonly service = Service.getInstance();

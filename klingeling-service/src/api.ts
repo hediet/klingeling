@@ -1,9 +1,9 @@
 import {
 	contract,
-	requestContract,
 	notificationContract,
+	requestContract,
 } from "@hediet/typed-json-rpc";
-import { number, union, type, refinement, boolean } from "io-ts";
+import { boolean, number, refinement, type, union } from "io-ts";
 
 export const port = 42319;
 
