@@ -1,7 +1,15 @@
 import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
+import { computed, observable } from "mobx";
 import { init } from "raspi";
-import { DigitalOutput, PULL_DOWN, PULL_UP } from "raspi-gpio";
+import {
+	DigitalInput,
+	DigitalOutput,
+	HIGH,
+	LOW,
+	PULL_DOWN,
+	PULL_UP,
+} from "raspi-gpio";
 import { openedDurationInMsType } from "./api";
 
 export class Service {
@@ -23,6 +31,19 @@ export class Service {
 	}
 
 	public readonly onReady = this.initializedBarrier.onUnlocked.then(() => {});
+
+	@computed
+	public get ringing(): boolean {
+		if (this.initializedBarrier.state === "resolved") {
+			let ringing = false;
+			this.initializedBarrier.onUnlocked.then(s => {
+				ringing = s.ringing;
+			});
+			return ringing;
+		} else {
+			return false;
+		}
+	}
 
 	public async openMainDoor(openedDurationInMs: number): Promise<void> {
 		const s = await this.initializedBarrier.onUnlocked;
@@ -91,8 +112,25 @@ class InitializedService {
 		pin: "GPIO21",
 	});
 
+	@observable ringing: boolean = false;
+
+	private readonly doorBellInput = new DigitalInput({
+		pullResistor: PULL_UP,
+		pin: "GPIO5",
+	});
+
 	constructor() {
 		this.reset();
+
+		this.doorBellInput.on("change", (value: number) => {
+			if (value == LOW) {
+				this.ringing = true;
+			} else if (value === HIGH) {
+				this.ringing = false;
+			} else {
+				console.error("unexpected value");
+			}
+		});
 	}
 
 	private reset() {
