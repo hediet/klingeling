@@ -1,6 +1,7 @@
 import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
 import { computed, observable } from "mobx";
+import { fromPromise } from "mobx-utils";
 import { init } from "raspi";
 import {
 	DigitalInput,
@@ -23,6 +24,9 @@ export class Service {
 	}
 
 	private readonly initializedBarrier = new Barrier<InitializedService>();
+	private readonly initialized = fromPromise(
+		this.initializedBarrier.onUnlocked
+	);
 
 	private constructor() {
 		init(() => {
@@ -34,19 +38,14 @@ export class Service {
 
 	@computed
 	public get ringing(): boolean {
-		if (this.initializedBarrier.state === "resolved") {
-			let ringing = false;
-			this.initializedBarrier.onUnlocked.then(s => {
-				ringing = s.ringing;
-			});
-			return ringing;
-		} else {
-			return false;
+		if (this.initialized.state === "fulfilled") {
+			return this.initialized.value.ringing;
 		}
+		return false;
 	}
 
 	public async openMainDoor(openedDurationInMs: number): Promise<void> {
-		const s = await this.initializedBarrier.onUnlocked;
+		const s = await this.initialized;
 		await s.openMainDoor(openedDurationInMs);
 	}
 
@@ -54,12 +53,12 @@ export class Service {
 		openTime: number;
 		closeTime: number;
 	}): Promise<void> {
-		const s = await this.initializedBarrier.onUnlocked;
+		const s = await this.initialized;
 		await s.openWgDoor(args);
 	}
 
 	public async dispose(): Promise<void> {
-		const s = await this.initializedBarrier.onUnlocked;
+		const s = await this.initialized;
 		await s.dispose();
 	}
 }
