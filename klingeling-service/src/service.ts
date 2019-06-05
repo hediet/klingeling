@@ -123,6 +123,7 @@ class InitializedService {
 		this.reset();
 
 		this.doorBellInput.on("change", (value: number) => {
+			console.log(`Door bell input changed to "${value}"`);
 			if (value == LOW) {
 				this.ringing = true;
 			} else if (value === HIGH) {
@@ -153,7 +154,7 @@ class InitializedService {
 			return;
 		}
 
-		const openTime = args ? args.openTime : 17600;
+		const openTime = args ? args.openTime : 18300;
 		const closeTime = args ? args.closeTime : 15500;
 
 		this.isOpening = true;
