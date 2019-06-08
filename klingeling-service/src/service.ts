@@ -122,7 +122,10 @@ class InitializedService {
 		this.reset();
 
 		this.doorBellInput.on("change", (value: number) => {
-			console.log(`Door bell input changed to "${value}", ${new Date()}`);
+			const d = new Date();
+			console.log(
+				`Door bell input changed to "${value}" on ${d}: ${d.getMilliseconds()}`
+			);
 			if (value == LOW) {
 				this.ringing = true;
 			} else if (value === HIGH) {
