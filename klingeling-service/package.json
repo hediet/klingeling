@@ -17,15 +17,12 @@
 		"@hediet/typed-json-rpc": "^0.7.5",
 		"@hediet/typed-json-rpc-websocket": "^0.6.0",
 		"@hediet/typed-json-rpc-websocket-server": "^0.6.0",
-		"@types/raspi-gpio": "^6.0.0",
+		"@types/pigpio": "^1.2.1",
 		"io-ts": "^1.8.6",
 		"mobx": "^5.10.0",
 		"mobx-utils": "^5.4.1",
-		"raspi": "^6.0.1",
+		"pigpio": "^1.2.2",
 		"ws": "^7.0.0"
-	},
-	"optionalDependencies": {
-		"raspi-gpio": "^6.2.1"
 	},
 	"private": true
 }

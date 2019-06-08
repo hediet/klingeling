@@ -2,16 +2,8 @@ import { Barrier } from "@hediet/std/synchronization";
 import { wait } from "@hediet/std/timer";
 import { computed, observable } from "mobx";
 import { fromPromise } from "mobx-utils";
-import { init } from "raspi";
-import {
-	DigitalInput,
-	DigitalOutput,
-	HIGH,
-	LOW,
-	PULL_DOWN,
-	PULL_UP,
-} from "raspi-gpio";
 import { openedDurationInMsType } from "./api";
+import { RaspberryPi } from "./RaspberryPi";
 
 export class Service {
 	private static instance: Service | undefined = undefined;
@@ -29,9 +21,7 @@ export class Service {
 	);
 
 	private constructor() {
-		init(() => {
-			this.initializedBarrier.unlock(new InitializedService());
-		});
+		this.initializedBarrier.unlock(new InitializedService());
 	}
 
 	public readonly onReady = this.initializedBarrier.onUnlocked.then(() => {});
@@ -66,15 +56,16 @@ export class Service {
 class InitializedService {
 	private disposed = false;
 
+	private rpi = new RaspberryPi();
+
 	public async dispose(): Promise<void> {
 		this.disposed = true;
 		this.reset();
 	}
 
-	private readonly mainDoorRelayOutput = new DigitalOutput({
-		pullResistor: PULL_UP,
-		pin: "GPIO3",
-	});
+	private readonly mainDoorRelayOutput = this.rpi
+		.getGpio(3)
+		.initializeAsOutput();
 
 	private mainDoorThreadCount = 0;
 	public async openMainDoor(openedDurationInMs: number): Promise<void> {
@@ -89,57 +80,47 @@ class InitializedService {
 		this.mainDoorThreadCount++;
 		try {
 			if (this.mainDoorThreadCount === 1) {
-				this.mainDoorRelayOutput.write(0);
+				this.mainDoorRelayOutput.setValue(false);
 			}
 			await wait(openedDurationInMs);
 		} finally {
 			this.mainDoorThreadCount--;
 
 			if (this.mainDoorThreadCount === 0) {
-				this.mainDoorRelayOutput.write(1);
+				this.mainDoorRelayOutput.setValue(true);
 			}
 		}
 	}
 
-	private readonly wgDoorMotorCloseOutput = new DigitalOutput({
-		pullResistor: PULL_DOWN,
-		pin: "GPIO20",
-	});
-
-	private readonly wgDoorMotorOpenOutput = new DigitalOutput({
-		pullResistor: PULL_DOWN,
-		pin: "GPIO21",
-	});
+	private readonly wgDoorMotorCloseOutput = this.rpi
+		.getGpio(20)
+		.initializeAsOutput();
+	private readonly wgDoorMotorOpenOutput = this.rpi
+		.getGpio(21)
+		.initializeAsOutput();
 
 	@observable ringing: boolean = false;
 
-	private readonly doorBellInput = new DigitalInput({
-		pullResistor: PULL_UP,
-		pin: "GPIO5",
+	private readonly doorBellInput = this.rpi.getGpio(5).initializeAsInput({
+		pullResistor: "up",
 	});
 
 	constructor() {
 		this.reset();
 
-		this.doorBellInput.on("change", (value: number) => {
+		this.doorBellInput.onChange.sub(({ value }) => {
 			const d = new Date();
 			console.log(
 				`Door bell input changed to "${value}" on ${d}: ${d.getMilliseconds()}`
 			);
-			if (value == LOW) {
-				this.ringing = true;
-			} else if (value === HIGH) {
-				this.ringing = false;
-			} else {
-				console.error("unexpected value");
-			}
+			this.ringing = value;
 		});
 	}
 
 	private reset() {
-		this.wgDoorMotorCloseOutput.write(0);
-		this.wgDoorMotorOpenOutput.write(0);
-		this.mainDoorRelayOutput.write(1);
+		this.wgDoorMotorCloseOutput.setValue(false);
+		this.wgDoorMotorOpenOutput.setValue(false);
+		this.mainDoorRelayOutput.setValue(true);
 	}
 
 	private isOpening = false;
@@ -163,23 +144,23 @@ class InitializedService {
 
 		try {
 			try {
-				this.wgDoorMotorOpenOutput.write(1);
+				this.wgDoorMotorOpenOutput.setValue(true);
 				await wait(openTime);
 			} finally {
 				if (this.disposed) {
 					return;
 				}
-				this.wgDoorMotorOpenOutput.write(0);
+				this.wgDoorMotorOpenOutput.setValue(false);
 			}
 
 			try {
-				this.wgDoorMotorCloseOutput.write(1);
+				this.wgDoorMotorCloseOutput.setValue(true);
 				await wait(closeTime);
 			} finally {
 				if (this.disposed) {
 					return;
 				}
-				this.wgDoorMotorCloseOutput.write(0);
+				this.wgDoorMotorCloseOutput.setValue(false);
 			}
 		} finally {
 			this.isOpening = false;
