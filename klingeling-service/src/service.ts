@@ -1,5 +1,6 @@
+import { Disposable } from "@hediet/std/disposable";
 import { Barrier } from "@hediet/std/synchronization";
-import { wait } from "@hediet/std/timer";
+import { startTimeout, wait } from "@hediet/std/timer";
 import { computed, observable } from "mobx";
 import { fromPromise } from "mobx-utils";
 import { openedDurationInMsType } from "./api";
@@ -108,12 +109,25 @@ class InitializedService {
 	constructor() {
 		this.reset();
 
+		let timeoutDisposable: Disposable | undefined = undefined;
+
 		this.doorBellInput.onChange.sub(({ value }) => {
 			const d = new Date();
 			console.log(
 				`Door bell input changed to "${value}" on ${d}: ${d.getMilliseconds()}`
 			);
-			this.ringing = value;
+			const ringing = !value;
+			if (ringing && !this.ringing && !timeoutDisposable) {
+				timeoutDisposable = startTimeout(50, () => {
+					this.ringing = true;
+				});
+			} else if (!ringing && this.ringing) {
+				if (timeoutDisposable) {
+					timeoutDisposable.dispose();
+					timeoutDisposable = undefined;
+				}
+				this.ringing = false;
+			}
 		});
 	}
 
