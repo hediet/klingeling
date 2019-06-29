@@ -41,12 +41,10 @@ function useSubject<T, O>(
 
 function fromEventSource<T>(src: EventSource<T, any>): Observable<T> {
 	return new Observable(sub => {
-		return () =>
-			src
-				.sub(args => {
-					sub.next(args);
-				})
-				.dispose();
+		const disp = src.sub(args => {
+			sub.next(args);
+		});
+		return () => disp.dispose();
 	});
 }
 
