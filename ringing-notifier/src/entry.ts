@@ -80,9 +80,11 @@ async function main() {
 			console.log("bell broken :(");
 		}
 
+		/*
 		klingelService.bellStateChanged({
 			isBroken: newValue === "broken",
 			isRinging: newValue === true,
 		});
+		*/
 	});
 }

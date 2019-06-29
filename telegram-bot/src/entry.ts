@@ -1,5 +1,5 @@
 import { newConfigDescription } from "@hediet/config";
-import { Disposable } from "@hediet/std/disposable";
+import { wait } from "@hediet/std/timer";
 import { connectToKlingelService, KlingelApi } from "@klingeling/service";
 import { execFile as _execFile } from "child_process";
 import _glob from "glob";
@@ -34,13 +34,15 @@ const configDescription = newConfigDescription({
 const config = configDescription.load();
 
 class Main {
-	private readonly klingelService: Promise<
-		typeof KlingelApi.TServerInterface & Disposable
-	>;
+	private klingelService:
+		| typeof KlingelApi.TServerInterface
+		| undefined = undefined;
 
 	private bot: Telegraf<ContextMessageUpdate>;
 
 	constructor() {
+		this.keepAliveConnection();
+
 		this.bot = new Telegraf(config.telegramToken);
 		this.bot.use(this.authenticate.bind(this));
 
@@ -77,23 +79,38 @@ class Main {
 
 		this.bot.launch();
 		this.log("Bot active.");
+	}
 
-		this.klingelService = connectToKlingelService({
-			bellStateChanged: async args => {
-				this.log("door bell state changed: " + JSON.stringify(args));
-				for (const chat of config.admins) {
-					if (args.isRinging) {
-						await this.sendButtons(chat, "The doorbell just rang!");
-						this.sendVideo(chat);
-					} else if (args.isBroken) {
-						this.bot.telegram.sendMessage(
-							chat,
-							"The doorbell just broke! :("
+	private async keepAliveConnection() {
+		while (true) {
+			try {
+				console.log("Connecting...");
+				const server = await connectToKlingelService({
+					bellStateChanged: async args => {
+						this.log(
+							"door bell state changed: " + JSON.stringify(args)
 						);
-					}
-				}
-			},
-		});
+						for (const chat of config.admins) {
+							if (args.isRinging) {
+								await this.sendButtons(
+									chat,
+									"The doorbell just rang!"
+								);
+								this.sendVideo(chat);
+							}
+						}
+					},
+				});
+				this.klingelService = server;
+				console.log("Connected.");
+				await server.stream.onClosed;
+				console.log("Disconnected.");
+			} catch (e) {
+				console.error("Error while connecting: ", e);
+			}
+			console.log("Waiting to reconnect.");
+			await wait(2000);
+		}
 	}
 
 	private authenticate(
@@ -213,12 +230,15 @@ class Main {
 			ctx.from.first_name,
 			ctx.from.last_name
 		);
-		const klingelService = await this.klingelService;
+		if (!this.klingelService) {
+			return;
+		}
+
 		ctx.replyWithMarkdown("Opening door...");
 		if (door === "main") {
-			await klingelService.openMainDoor();
+			await this.klingelService.openMainDoor();
 		} else {
-			await klingelService.openWgDoor();
+			await this.klingelService.openWgDoor();
 		}
 	}
 }

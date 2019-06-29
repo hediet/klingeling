@@ -1,6 +1,5 @@
 import { ConsoleRpcLogger, ConsoleStreamLogger } from "@hediet/typed-json-rpc";
 import { startWebSocketServer } from "@hediet/typed-json-rpc-websocket-server";
-import { reaction } from "mobx";
 import { KlingelApi, port } from "./api";
 import { Service } from "./service";
 
@@ -36,11 +35,6 @@ class Main {
 					openWgDoorConfig: async ({ closeTime, openTime }) => {
 						await this.service.openWgDoor({ closeTime, openTime });
 					},
-					bellStateChanged: async args => {
-						for (const c of this.clients) {
-							c.bellStateChanged(args);
-						}
-					},
 				}
 			);
 
@@ -51,22 +45,17 @@ class Main {
 			console.log("client disconnected ", stream.toString());
 		});
 
-		const reactionDisposer = reaction(
-			() => this.service.ringing,
-			() => {
-				for (const c of this.clients) {
-					c.bellStateChanged({
-						isBroken: false,
-						isRinging: this.service.ringing,
-					});
-				}
+		this.service.isRinging.forEach(e => {
+			for (const c of this.clients) {
+				c.bellStateChanged({
+					time: e.date.getTime(),
+					isRinging: e.ringing,
+				});
 			}
-		);
+		});
 	}
 
 	private async registerSignalHandler() {
-		await this.service.onReady;
-
 		for (const signal of [
 			"SIGHUP",
 			"SIGINT",
