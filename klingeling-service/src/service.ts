@@ -10,7 +10,14 @@ import {
 	race,
 	Subject,
 } from "rxjs";
-import { filter, map, mergeMap, take, tap } from "rxjs/operators";
+import {
+	distinctUntilChanged,
+	filter,
+	map,
+	mergeMap,
+	take,
+	tap,
+} from "rxjs/operators";
 import { openedDurationInMsType } from "./api";
 import { RaspberryPi } from "./RaspberryPi";
 
@@ -123,7 +130,8 @@ export class Service {
 						  )
 				)
 			)
-		)
+		),
+		distinctUntilChanged((e1, e2) => e1.ringing == e2.ringing)
 	);
 
 	constructor() {
