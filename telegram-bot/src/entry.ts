@@ -86,9 +86,9 @@ class Main {
 		for (const chat of config.admins) {
 			this.bot.telegram.sendMessage(
 				chat,
-				`Opening WG door... (requested by ${reason.type}: ${
-					reason.username
-				})`
+				`Opening ${
+					{ wg: "WG", main: "Main" }[type]
+				} door... (requested by ${reason.type}: ${reason.username})`
 			);
 		}
 	}
