@@ -16,7 +16,7 @@ class Main {
 				new ConsoleRpcLogger(),
 				{
 					openMainDoor: async ({
-						openedDurationInMs = 3000,
+						openedDurationInMs = 5250,
 						reason,
 					}) => {
 						for (const c of this.clients) {
