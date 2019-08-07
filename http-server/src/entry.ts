@@ -4,6 +4,9 @@ import basicAuth = require("express-basic-auth");
 
 const app = express();
 
+app.use(express.json()); // to support JSON-encoded bodies
+app.use(express.urlencoded()); // to support URL-encoded bodies
+
 if (false) {
 	// uses nginx authentication now.
 	app.use(
@@ -25,7 +28,7 @@ app.post("/openWgDoor", async function(req, res) {
 		await klingelService.openWgDoor({
 			reason: {
 				type: "http",
-				username: req.params.user || "admin",
+				username: req.body.user || "HACKER",
 			},
 		});
 	} finally {
@@ -41,7 +44,7 @@ app.post("/openMainDoor", async function(req, res) {
 	const klingelService = await connectToKlingelService();
 	try {
 		await klingelService.openMainDoor({
-			reason: { type: "http", username: req.params.user || "admin" },
+			reason: { type: "http", username: req.body.user || "HACKER" },
 		});
 	} finally {
 		klingelService.dispose();
