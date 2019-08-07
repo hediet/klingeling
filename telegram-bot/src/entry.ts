@@ -234,7 +234,9 @@ class Main {
 			return;
 		}
 
-		ctx.replyWithMarkdown("Opening door...");
+		ctx.replyWithMarkdown(
+			`Opening ${door} door... (requested by ${ctx.from.first_name})`
+		);
 		if (door === "main") {
 			await this.klingelService.openMainDoor();
 		} else {
