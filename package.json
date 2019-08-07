@@ -11,8 +11,8 @@
 		"husky": ">=1",
 		"lint-staged": ">=8",
 		"prettier": "^1.17.1",
-		"typescript": "next",
-		"ts-node": "^8.2.0"
+		"ts-node": "^8.2.0",
+		"typescript": "^3.5.3"
 	},
 	"husky": {
 		"hooks": {

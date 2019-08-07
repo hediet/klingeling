@@ -15,21 +15,21 @@ class Main {
 				new ConsoleStreamLogger(stream),
 				new ConsoleRpcLogger(),
 				{
-					openMainDoor: async args => {
-						let openedDurationInMs = 3000;
-						if ("openedDurationInMs" in args) {
-							openedDurationInMs = args.openedDurationInMs;
-						}
-
+					openMainDoor: async ({
+						openedDurationInMs = 3000,
+						reason,
+					}) => {
 						for (const c of this.clients) {
-							c.mainDoorOpened({});
+							c.mainDoorOpened({ reason });
 						}
+						console.log("opening main door", reason);
 						await this.service.openMainDoor(openedDurationInMs);
 					},
-					openWgDoor: async () => {
+					openWgDoor: async ({ reason }) => {
 						for (const c of this.clients) {
-							c.wgDoorOpened({});
+							c.wgDoorOpened({ reason });
 						}
+						console.log("opening wg door", reason);
 						await this.service.openWgDoor();
 					},
 					openWgDoorConfig: async ({ closeTime, openTime }) => {

@@ -1,6 +1,7 @@
 import { newConfigDescription } from "@hediet/config";
 import { wait } from "@hediet/std/timer";
 import { connectToKlingelService, KlingelApi } from "@klingeling/service";
+import { DoorOpenedReason } from "@klingeling/service/dist/api";
 import { execFile as _execFile } from "child_process";
 import _glob from "glob";
 import * as t from "io-ts";
@@ -81,6 +82,17 @@ class Main {
 		this.log("Bot active.");
 	}
 
+	private async reportOpened(type: "wg" | "main", reason: DoorOpenedReason) {
+		for (const chat of config.admins) {
+			this.bot.telegram.sendMessage(
+				chat,
+				`Opening WG door... (requested by ${reason.type}: ${
+					reason.username
+				})`
+			);
+		}
+	}
+
 	private async keepAliveConnection() {
 		while (true) {
 			try {
@@ -100,6 +112,10 @@ class Main {
 							}
 						}
 					},
+					wgDoorOpened: async ({ reason }) =>
+						this.reportOpened("wg", reason),
+					mainDoorOpened: async ({ reason }) =>
+						this.reportOpened("main", reason),
 				});
 				this.klingelService = server;
 				console.log("Connected.");
@@ -234,13 +250,15 @@ class Main {
 			return;
 		}
 
-		ctx.replyWithMarkdown(
-			`Opening ${door} door... (requested by ${ctx.from.first_name})`
-		);
+		const reason = {
+			type: "telegram",
+			id: ctx.from.id,
+			username: ctx.from.first_name,
+		} as const;
 		if (door === "main") {
-			await this.klingelService.openMainDoor();
+			await this.klingelService.openMainDoor({ reason });
 		} else {
-			await this.klingelService.openWgDoor();
+			await this.klingelService.openWgDoor({ reason });
 		}
 	}
 }

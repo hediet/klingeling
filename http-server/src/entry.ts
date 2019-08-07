@@ -22,7 +22,12 @@ app.get("/status", function(req, res) {
 app.post("/openWgDoor", async function(req, res) {
 	const klingelService = await connectToKlingelService();
 	try {
-		await klingelService.openWgDoor();
+		await klingelService.openWgDoor({
+			reason: {
+				type: "http",
+				username: req.params.user || "admin",
+			},
+		});
 	} finally {
 		klingelService.dispose();
 	}
@@ -35,7 +40,9 @@ app.post("/openWgDoor", async function(req, res) {
 app.post("/openMainDoor", async function(req, res) {
 	const klingelService = await connectToKlingelService();
 	try {
-		await klingelService.openMainDoor();
+		await klingelService.openMainDoor({
+			reason: { type: "http", username: req.params.user || "admin" },
+		});
 	} finally {
 		klingelService.dispose();
 	}
