@@ -88,7 +88,8 @@ class Main {
 				chat,
 				`Opening ${
 					{ wg: "WG", main: "Main" }[type]
-				} door... (requested by ${reason.type}: ${reason.username})`
+				} door... (requested by ${reason.type}: ${reason.username})`,
+				{ disable_notification: true }
 			);
 		}
 	}
@@ -193,7 +194,8 @@ class Main {
 		this.bot.telegram.sendMessage(
 			chatId,
 			`Here's the last ${chunkNames.length *
-				c.chunkLengthSeconds} seconds of video:`
+				c.chunkLengthSeconds} seconds of video:`,
+			{ disable_notification: true }
 		);
 
 		const fnames = [c.initSegment, ...chunkNames];
