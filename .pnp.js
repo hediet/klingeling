@@ -163,21 +163,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"@hediet/std",
 					[
 						[
-							"npm:0.4.0",
-							{
-								packageLocation:
-									"./.yarn/cache/@hediet-std-npm-0.4.0-5d328951f5-2.zip/node_modules/@hediet/std/",
-								packageDependencies: [
-									["@hediet/std", "npm:0.4.0"],
-									["@types/chai", "npm:4.2.10"],
-									["@types/sinon", "npm:7.5.2"],
-									["chai", "npm:4.2.0"],
-									["sinon", "npm:7.5.0"],
-								],
-								linkType: "HARD",
-							},
-						],
-						[
 							"npm:0.6.0",
 							{
 								packageLocation:
@@ -199,19 +184,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"@hediet/typed-json-rpc",
 					[
 						[
-							"npm:0.6.1",
-							{
-								packageLocation:
-									"./.yarn/cache/@hediet-typed-json-rpc-npm-0.6.1-e3910936e1-2.zip/node_modules/@hediet/typed-json-rpc/",
-								packageDependencies: [
-									["@hediet/typed-json-rpc", "npm:0.6.1"],
-									["@hediet/std", "npm:0.4.0"],
-									["io-ts", "npm:1.10.4"],
-								],
-								linkType: "HARD",
-							},
-						],
-						[
 							"npm:0.7.7",
 							{
 								packageLocation:
@@ -230,20 +202,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"@hediet/typed-json-rpc-websocket",
 					[
 						[
-							"npm:0.6.0",
+							"npm:0.7.7",
 							{
 								packageLocation:
-									"./.yarn/cache/@hediet-typed-json-rpc-websocket-npm-0.6.0-6e332bc7be-2.zip/node_modules/@hediet/typed-json-rpc-websocket/",
+									"./.yarn/cache/@hediet-typed-json-rpc-websocket-npm-0.7.7-3437816601-2.zip/node_modules/@hediet/typed-json-rpc-websocket/",
 								packageDependencies: [
 									[
 										"@hediet/typed-json-rpc-websocket",
-										"npm:0.6.0",
+										"npm:0.7.7",
 									],
-									["@hediet/typed-json-rpc", "npm:0.6.1"],
+									["@hediet/typed-json-rpc", "npm:0.7.7"],
 									["@types/ws", "npm:6.0.4"],
 									[
 										"isomorphic-ws",
-										"virtual:6e332bc7beab331e1b261f8f3305e8e4d7edb86002bc922247937e48c9aa6d13f723b8d5d13b102e218196ab646557a5cd0948f9cb14358419c732eb8b38d28f#npm:4.0.1",
+										"virtual:3437816601072aba19a1aa55a32a7726a25ed52788472a96a93a9efd9bcf034e5d947b6b5b1112a556c2fa91d9f07e083b99e0c45f134d689b5dfc8a5f326e54#npm:4.0.1",
 									],
 								],
 								linkType: "HARD",
@@ -255,19 +227,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"@hediet/typed-json-rpc-websocket-server",
 					[
 						[
-							"npm:0.6.0",
+							"npm:0.7.7",
 							{
 								packageLocation:
-									"./.yarn/cache/@hediet-typed-json-rpc-websocket-server-npm-0.6.0-d83d51acbb-2.zip/node_modules/@hediet/typed-json-rpc-websocket-server/",
+									"./.yarn/cache/@hediet-typed-json-rpc-websocket-server-npm-0.7.7-f9d70109ae-2.zip/node_modules/@hediet/typed-json-rpc-websocket-server/",
 								packageDependencies: [
 									[
 										"@hediet/typed-json-rpc-websocket-server",
-										"npm:0.6.0",
+										"npm:0.7.7",
 									],
-									["@hediet/std", "npm:0.4.0"],
-									["@hediet/typed-json-rpc", "npm:0.6.1"],
+									["@hediet/std", "npm:0.6.0"],
+									["@hediet/typed-json-rpc", "npm:0.7.7"],
 									["@types/ws", "npm:6.0.4"],
-									["ws", "npm:6.2.1"],
+									[
+										"ws",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
+									],
 								],
 								linkType: "HARD",
 							},
@@ -286,14 +261,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 										"@klingeling/client",
 										"workspace:cli-client",
 									],
-									["@hediet/std", "npm:0.4.0"],
+									["@hediet/std", "npm:0.6.0"],
 									[
 										"@klingeling/service",
 										"workspace:klingeling-service",
 									],
 									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 								],
 								linkType: "SOFT",
@@ -313,7 +288,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 										"@klingeling/http-server",
 										"workspace:http-server",
 									],
-									["@hediet/std", "npm:0.4.0"],
+									["@hediet/std", "npm:0.6.0"],
 									[
 										"@klingeling/service",
 										"workspace:klingeling-service",
@@ -323,7 +298,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 									["express-basic-auth", "npm:1.2.0"],
 									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 								],
 								linkType: "SOFT",
@@ -343,7 +318,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 										"@klingeling/ring-notifier",
 										"workspace:ringing-notifier",
 									],
-									["@hediet/std", "npm:0.4.0"],
+									["@hediet/std", "npm:0.6.0"],
 									[
 										"@klingeling/service",
 										"workspace:klingeling-service",
@@ -351,7 +326,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 									["rxjs", "npm:6.5.4"],
 									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 								],
 								linkType: "SOFT",
@@ -371,15 +346,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 										"@klingeling/service",
 										"workspace:klingeling-service",
 									],
-									["@hediet/std", "npm:0.4.0"],
+									["@hediet/std", "npm:0.6.0"],
 									["@hediet/typed-json-rpc", "npm:0.7.7"],
 									[
 										"@hediet/typed-json-rpc-websocket",
-										"npm:0.6.0",
+										"npm:0.7.7",
 									],
 									[
 										"@hediet/typed-json-rpc-websocket-server",
-										"npm:0.6.0",
+										"npm:0.7.7",
 									],
 									["@types/pigpio", "npm:1.2.2"],
 									["io-ts", "npm:1.10.4"],
@@ -391,8 +366,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 									["pigpio", "npm:1.3.0"],
 									["rxjs", "npm:6.5.4"],
 									[
+										"typescript",
+										"patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569",
+									],
+									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 								],
 								linkType: "SOFT",
@@ -413,7 +392,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 										"workspace:telegram-bot",
 									],
 									["@hediet/config", "npm:0.1.1"],
-									["@hediet/std", "npm:0.4.0"],
+									["@hediet/std", "npm:0.6.0"],
 									[
 										"@klingeling/service",
 										"workspace:klingeling-service",
@@ -428,7 +407,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 									],
 									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 								],
 								linkType: "SOFT",
@@ -1118,22 +1097,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 									"./.yarn/cache/assertion-error-npm-1.1.0-66b893015e-2.zip/node_modules/assertion-error/",
 								packageDependencies: [
 									["assertion-error", "npm:1.1.0"],
-								],
-								linkType: "HARD",
-							},
-						],
-					],
-				],
-				[
-					"async-limiter",
-					[
-						[
-							"npm:1.0.1",
-							{
-								packageLocation:
-									"./.yarn/cache/async-limiter-npm-1.0.1-7e6819bcdb-2.zip/node_modules/async-limiter/",
-								packageDependencies: [
-									["async-limiter", "npm:1.0.1"],
 								],
 								linkType: "HARD",
 							},
@@ -3211,14 +3174,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"isomorphic-ws",
 					[
 						[
-							"virtual:6e332bc7beab331e1b261f8f3305e8e4d7edb86002bc922247937e48c9aa6d13f723b8d5d13b102e218196ab646557a5cd0948f9cb14358419c732eb8b38d28f#npm:4.0.1",
+							"virtual:3437816601072aba19a1aa55a32a7726a25ed52788472a96a93a9efd9bcf034e5d947b6b5b1112a556c2fa91d9f07e083b99e0c45f134d689b5dfc8a5f326e54#npm:4.0.1",
 							{
 								packageLocation:
-									"./.yarn/$$virtual/isomorphic-ws-virtual-ed044e69e4/0/cache/isomorphic-ws-npm-4.0.1-aa39192848-2.zip/node_modules/isomorphic-ws/",
+									"./.yarn/$$virtual/isomorphic-ws-virtual-1aabc958de/0/cache/isomorphic-ws-npm-4.0.1-aa39192848-2.zip/node_modules/isomorphic-ws/",
 								packageDependencies: [
 									[
 										"isomorphic-ws",
-										"virtual:6e332bc7beab331e1b261f8f3305e8e4d7edb86002bc922247937e48c9aa6d13f723b8d5d13b102e218196ab646557a5cd0948f9cb14358419c732eb8b38d28f#npm:4.0.1",
+										"virtual:3437816601072aba19a1aa55a32a7726a25ed52788472a96a93a9efd9bcf034e5d947b6b5b1112a556c2fa91d9f07e083b99e0c45f134d689b5dfc8a5f326e54#npm:4.0.1",
 									],
 									["ws", null],
 								],
@@ -5984,26 +5947,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
 					"ws",
 					[
 						[
-							"npm:6.2.1",
+							"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 							{
 								packageLocation:
-									"./.yarn/cache/ws-npm-6.2.1-bbe0ef9859-2.zip/node_modules/ws/",
-								packageDependencies: [
-									["ws", "npm:6.2.1"],
-									["async-limiter", "npm:1.0.1"],
-								],
-								linkType: "HARD",
-							},
-						],
-						[
-							"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
-							{
-								packageLocation:
-									"./.yarn/$$virtual/ws-virtual-73847d01f4/0/cache/ws-npm-7.2.1-6a11e4a4b3-2.zip/node_modules/ws/",
+									"./.yarn/$$virtual/ws-virtual-4c6916be1b/0/cache/ws-npm-7.2.1-6a11e4a4b3-2.zip/node_modules/ws/",
 								packageDependencies: [
 									[
 										"ws",
-										"virtual:7563c020c2010065fc5bb56e84c4629b672a0b1b1a9a96296aead9bf26108c49eb5af8c1c405e29a3189b65141da6afb408380e294270fef9eb237a480e7e284#npm:7.2.1",
+										"virtual:f9d70109ae6e05420f749737da581e9965d2a2bdc5264e637d81f331d488eb2ce81431ffe6f3464b958b3b52bf0c445fa70127e06ef6519753590e4ae823013c#npm:7.2.1",
 									],
 									["bufferutil", null],
 									["utf-8-validate", null],

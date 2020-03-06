@@ -9,13 +9,13 @@
 	},
 	"dependencies": {
 		"@hediet/config": "^0.1.1",
-		"@hediet/std": "^0.4.0",
+		"@hediet/std": "^0.6.0",
 		"@klingeling/service": "0.1.0",
 		"@types/glob": "^7.1.1",
-		"glob": "^7.1.4",
-		"io-ts": "^1.8.6",
-		"telegraf": "^3.29.0",
-		"telegraf-inline-menu": "^3.5.4",
-		"ws": "^7.0.0"
+		"glob": "^7.1.6",
+		"io-ts": "^1.10.4",
+		"telegraf": "^3.36.0",
+		"telegraf-inline-menu": "^3.6.3",
+		"ws": "^7.2.1"
 	}
 }

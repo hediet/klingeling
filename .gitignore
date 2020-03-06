@@ -84,3 +84,6 @@ dist/
 tsconfig.tsbuildinfo
 
 data/
+
+/note.md
+/playground
