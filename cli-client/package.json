@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"@hediet/std": "^0.4.0",
-		"ws": "^7.0.0",
-		"@klingeling/service": "0.1.0"
+		"@klingeling/service": "0.1.0",
+		"ws": "^7.0.0"
 	}
 }
